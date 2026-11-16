@@ -1,0 +1,426 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="IT infrastructure, cloud, networking and cybersecurity projects by Ambrose Onsare.">
+  <title>Projects | Ambrose Onsare</title>
+
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #080d18;
+      --panel: #111a2b;
+      --text: #edf2fa;
+      --muted: #9aa9bd;
+      --accent: #55b8ff;
+      --border: #26344a;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+    }
+
+    a { color: inherit; text-decoration: none; }
+
+    .container { width: min(1100px, 90%); margin: auto; }
+
+    header {
+      background: rgba(8,13,24,.96);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    nav {
+      min-height: 75px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .logo { font-size: 21px; font-weight: bold; }
+    .logo span { color: var(--accent); }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+      list-style: none;
+    }
+
+    .nav-links a { color: var(--muted); }
+    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+
+    .page-header { padding: 85px 0 55px; }
+
+    .eyebrow {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 13px;
+    }
+
+    h1 { font-size: clamp(38px, 6vw, 56px); margin: 15px 0; }
+    .intro { color: var(--muted); max-width: 720px; font-size: 17px; }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 35px 0;
+    }
+
+    .filter {
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--muted);
+      border-radius: 25px;
+      padding: 9px 17px;
+      cursor: pointer;
+    }
+
+    .filter:hover, .filter.active {
+      color: #08111e;
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 22px;
+    }
+
+    .project {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: .2s;
+    }
+
+    .project:hover {
+      transform: translateY(-5px);
+      border-color: var(--accent);
+    }
+
+    .project-content { padding: 24px; }
+
+    .category {
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-size: 11px;
+      font-weight: bold;
+    }
+
+    h2 { font-size: 21px; margin: 10px 0; }
+
+    .description { color: var(--muted); font-size: 14px; }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin: 18px 0;
+    }
+
+    .tag {
+      font-size: 11px;
+      padding: 5px 9px;
+      border-radius: 5px;
+      background: #1a2940;
+      color: #b7dfff;
+    }
+
+    .links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      padding-top: 15px;
+      border-top: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    .links a { color: var(--accent); font-weight: bold; }
+
+    .empty {
+      display: none;
+      color: var(--muted);
+      padding: 30px 0;
+    }
+
+    .blog-cta {
+      margin: 75px 0;
+      padding: 35px;
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+
+    .blog-cta p { color: var(--muted); margin: 10px 0; }
+
+    .blog-cta a { color: var(--accent); font-weight: bold; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      text-align: center;
+      padding: 30px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media(max-width: 600px) {
+      nav { flex-direction: column; padding: 15px 0; }
+      .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
+      .page-header { padding: 60px 0 35px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <nav class="container">
+    <a href="index.html" class="logo">AMBROSE<span>.</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a class="active" href="projects.html">Projects</a></li>
+      <li><a href="blog/index.html">Blog</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+  </nav>
+</header>
+
+<main class="container">
+
+  <section class="page-header">
+    <div class="eyebrow">Practical engineering & implementation</div>
+    <h1>My Projects</h1>
+    <p class="intro">
+      A collection of infrastructure implementations, cloud deployments,
+      networking solutions and automation projects. Each case study
+      explores the architecture, technologies, challenges and lessons learned.
+    </p>
+  </section>
+
+  <div class="filters">
+    <button class="filter active" data-filter="all">All Projects</button>
+    <button class="filter" data-filter="cloud">Cloud</button>
+    <button class="filter" data-filter="infrastructure">Infrastructure</button>
+    <button class="filter" data-filter="security">Security</button>
+    <button class="filter" data-filter="automation">Automation</button>
+    <button class="filter" data-filter="monitoring">Monitoring</button>
+  </div>
+
+  <section class="grid" id="projectGrid">
+
+    <article class="project" data-category="infrastructure">
+      <div class="project-content">
+        <div class="category">Infrastructure / Identity</div>
+        <h2>Active Directory Migration</h2>
+        <p class="description">
+          Migration from Windows Server 2016 to Windows Server 2022,
+          including secondary domain controller deployment, replication,
+          DNS, FSMO transfer and domain controller validation.
+        </p>
+        <div class="tags">
+          <span class="tag">Windows Server 2022</span>
+          <span class="tag">Active Directory</span>
+          <span class="tag">PowerShell</span>
+          <span class="tag">DNS</span>
+        </div>
+        <div class="links">
+          <a href="projects/active-directory-migration.html">View case study →</a>
+          <a href="blog/active-directory-migration.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="infrastructure">
+      <div class="project-content">
+        <div class="category">Backup / Infrastructure</div>
+        <h2>Veeam Backup Infrastructure</h2>
+        <p class="description">
+          Designing and configuring backup infrastructure using Veeam,
+          local repositories, cloud connectivity and backup
+          retention strategies.
+        </p>
+        <div class="tags">
+          <span class="tag">Veeam</span>
+          <span class="tag">Windows Server</span>
+          <span class="tag">Backup</span>
+          <span class="tag">Cloud</span>
+        </div>
+        <div class="links">
+          <a href="projects/veeam-backup.html">View case study →</a>
+          <a href="blog/veeam-backup.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="infrastructure">
+      <div class="project-content">
+        <div class="category">Virtualization / Homelab</div>
+        <h2>Proxmox Homelab</h2>
+        <p class="description">
+          Building a self-hosted virtualization environment for Linux
+          workloads, network experimentation, containerization and
+          Kubernetes learning.
+        </p>
+        <div class="tags">
+          <span class="tag">Proxmox VE</span>
+          <span class="tag">Linux</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Kubernetes</span>
+        </div>
+        <div class="links">
+          <a href="projects/proxmox-homelab.html">View case study →</a>
+          <a href="blog/proxmox-homelab.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="cloud">
+      <div class="project-content">
+        <div class="category">Cloud / Networking</div>
+        <h2>Azure Infrastructure</h2>
+        <p class="description">
+          Cloud infrastructure exploration involving Azure networking,
+          virtual machines, VPN connectivity, storage and infrastructure
+          administration.
+        </p>
+        <div class="tags">
+          <span class="tag">Microsoft Azure</span>
+          <span class="tag">VNet</span>
+          <span class="tag">VPN</span>
+          <span class="tag">Storage</span>
+        </div>
+        <div class="links">
+          <a href="projects/azure-infrastructure.html">View case study →</a>
+          <a href="blog/azure-infrastructure.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="monitoring">
+      <div class="project-content">
+        <div class="category">Monitoring / Observability</div>
+        <h2>Prometheus & Grafana Monitoring</h2>
+        <p class="description">
+          Deploying monitoring services on Ubuntu, configuring Prometheus
+          scrape targets, Node Exporter and PostgreSQL metrics collection.
+        </p>
+        <div class="tags">
+          <span class="tag">Prometheus</span>
+          <span class="tag">Grafana</span>
+          <span class="tag">Ubuntu</span>
+          <span class="tag">PostgreSQL</span>
+        </div>
+        <div class="links">
+          <a href="projects/monitoring-stack.html">View case study →</a>
+          <a href="blog/monitoring-stack.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="automation">
+      <div class="project-content">
+        <div class="category">Automation / Microsoft 365</div>
+        <h2>Hikvision to SharePoint Automation</h2>
+        <p class="description">
+          Automating daily video exports from a Hikvision NVR
+          and uploading recordings to a SharePoint document library
+          using Microsoft Graph.
+        </p>
+        <div class="tags">
+          <span class="tag">Hikvision NVR</span>
+          <span class="tag">PowerShell</span>
+          <span class="tag">Microsoft Graph</span>
+          <span class="tag">SharePoint</span>
+        </div>
+        <div class="links">
+          <a href="projects/hikvision-sharepoint.html">View case study →</a>
+          <a href="blog/hikvision-sharepoint.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+    <article class="project" data-category="security">
+      <div class="project-content">
+        <div class="category">Network / Security</div>
+        <h2>Enterprise Network Security</h2>
+        <p class="description">
+          Enterprise networking and firewall administration involving
+          Fortinet, Sophos, VLAN segmentation, DHCP, access control
+          and network troubleshooting.
+        </p>
+        <div class="tags">
+          <span class="tag">Fortinet</span>
+          <span class="tag">Sophos</span>
+          <span class="tag">VLANs</span>
+          <span class="tag">Networking</span>
+        </div>
+        <div class="links">
+          <a href="projects/network-security.html">View case study →</a>
+          <a href="blog/network-security.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
+  </section>
+
+  <p class="empty" id="emptyMessage">No projects in this category yet.</p>
+
+  <section class="blog-cta">
+    <h2>Want to understand how these projects were built?</h2>
+    <p>
+      Visit my technical blog for implementation guides, troubleshooting
+      walkthroughs, architecture discussions and lessons learned.
+    </p>
+    <a href="blog/index.html">Explore the technical blog →</a>
+  </section>
+
+</main>
+
+<footer>
+  © 2026 Ambrose Onsare. All rights reserved.
+</footer>
+
+<script>
+  const filters = document.querySelectorAll(".filter");
+  const projects = document.querySelectorAll(".project");
+  const emptyMessage = document.getElementById("emptyMessage");
+
+  filters.forEach(button => {
+    button.addEventListener("click", () => {
+      filters.forEach(item => item.classList.remove("active"));
+      button.classList.add("active");
+
+      const selected = button.dataset.filter;
+      let visible = 0;
+
+      projects.forEach(project => {
+        const matches =
+          selected === "all" ||
+          project.dataset.category === selected;
+
+        project.style.display = matches ? "block" : "none";
+        if (matches) visible++;
+      });
+
+      emptyMessage.style.display = visible ? "none" : "block";
+    });
+  });
+</script>
+
+</body>
+</html>
