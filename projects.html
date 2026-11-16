@@ -4,11 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="IT infrastructure, cloud, networking and cybersecurity projects by Ambrose Onsare.">
+  <meta name="description" content="Ambrose Onsare's technical portfolio featuring cloud, Linux, infrastructure, networking, automation and security projects.">
   <title>Projects | Ambrose Onsare</title>
 
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
     :root {
       --bg: #080d18;
@@ -26,9 +30,15 @@
       line-height: 1.7;
     }
 
-    a { color: inherit; text-decoration: none; }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
 
-    .container { width: min(1100px, 90%); margin: auto; }
+    .container {
+      width: min(1100px, 90%);
+      margin: auto;
+    }
 
     header {
       background: rgba(8,13,24,.96);
@@ -46,8 +56,14 @@
       gap: 20px;
     }
 
-    .logo { font-size: 21px; font-weight: bold; }
-    .logo span { color: var(--accent); }
+    .logo {
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
 
     .nav-links {
       display: flex;
@@ -55,10 +71,19 @@
       list-style: none;
     }
 
-    .nav-links a { color: var(--muted); }
-    .nav-links a:hover, .nav-links a.active { color: var(--accent); }
+    .nav-links a {
+      color: var(--muted);
+      transition: .2s;
+    }
 
-    .page-header { padding: 85px 0 55px; }
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: var(--accent);
+    }
+
+    .page-header {
+      padding: 85px 0 55px;
+    }
 
     .eyebrow {
       color: var(--accent);
@@ -67,8 +92,16 @@
       font-size: 13px;
     }
 
-    h1 { font-size: clamp(38px, 6vw, 56px); margin: 15px 0; }
-    .intro { color: var(--muted); max-width: 720px; font-size: 17px; }
+    h1 {
+      font-size: clamp(38px, 6vw, 56px);
+      margin: 15px 0;
+    }
+
+    .intro {
+      color: var(--muted);
+      max-width: 720px;
+      font-size: 17px;
+    }
 
     .filters {
       display: flex;
@@ -84,9 +117,12 @@
       border-radius: 25px;
       padding: 9px 17px;
       cursor: pointer;
+      font-size: 13px;
+      transition: .2s;
     }
 
-    .filter:hover, .filter.active {
+    .filter:hover,
+    .filter.active {
       color: #08111e;
       background: var(--accent);
       border-color: var(--accent);
@@ -103,7 +139,9 @@
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
-      transition: .2s;
+      transition: .25s;
+      display: flex;
+      flex-direction: column;
     }
 
     .project:hover {
@@ -111,7 +149,10 @@
       border-color: var(--accent);
     }
 
-    .project-content { padding: 24px; }
+    .project-content {
+      padding: 25px;
+      flex: 1;
+    }
 
     .category {
       color: var(--accent);
@@ -121,9 +162,16 @@
       font-weight: bold;
     }
 
-    h2 { font-size: 21px; margin: 10px 0; }
+    h2 {
+      font-size: 21px;
+      margin: 10px 0;
+      line-height: 1.4;
+    }
 
-    .description { color: var(--muted); font-size: 14px; }
+    .description {
+      color: var(--muted);
+      font-size: 14px;
+    }
 
     .tags {
       display: flex;
@@ -149,7 +197,14 @@
       font-size: 13px;
     }
 
-    .links a { color: var(--accent); font-weight: bold; }
+    .links a {
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    .links a:hover {
+      text-decoration: underline;
+    }
 
     .empty {
       display: none;
@@ -165,9 +220,15 @@
       border-radius: 12px;
     }
 
-    .blog-cta p { color: var(--muted); margin: 10px 0; }
+    .blog-cta p {
+      color: var(--muted);
+      margin: 10px 0;
+    }
 
-    .blog-cta a { color: var(--accent); font-weight: bold; }
+    .blog-cta a {
+      color: var(--accent);
+      font-weight: bold;
+    }
 
     footer {
       border-top: 1px solid var(--border);
@@ -178,9 +239,24 @@
     }
 
     @media(max-width: 600px) {
-      nav { flex-direction: column; padding: 15px 0; }
-      .nav-links { gap: 15px; flex-wrap: wrap; justify-content: center; }
-      .page-header { padding: 60px 0 35px; }
+      nav {
+        flex-direction: column;
+        padding: 15px 0;
+      }
+
+      .nav-links {
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .page-header {
+        padding: 60px 0 35px;
+      }
+
+      .blog-cta {
+        padding: 25px;
+      }
     }
   </style>
 </head>
@@ -190,6 +266,7 @@
 <header>
   <nav class="container">
     <a href="index.html" class="logo">AMBROSE<span>.</span></a>
+
     <ul class="nav-links">
       <li><a href="index.html">Home</a></li>
       <li><a class="active" href="projects.html">Projects</a></li>
@@ -204,11 +281,14 @@
 
   <section class="page-header">
     <div class="eyebrow">Practical engineering & implementation</div>
+
     <h1>My Projects</h1>
+
     <p class="intro">
       A collection of infrastructure implementations, cloud deployments,
-      networking solutions and automation projects. Each case study
-      explores the architecture, technologies, challenges and lessons learned.
+      networking solutions, automation and Linux engineering projects.
+      Explore the technologies, challenges, technical decisions and
+      lessons behind my work.
     </p>
   </section>
 
@@ -216,6 +296,7 @@
     <button class="filter active" data-filter="all">All Projects</button>
     <button class="filter" data-filter="cloud">Cloud</button>
     <button class="filter" data-filter="infrastructure">Infrastructure</button>
+    <button class="filter" data-filter="linux">Linux / DevOps</button>
     <button class="filter" data-filter="security">Security</button>
     <button class="filter" data-filter="automation">Automation</button>
     <button class="filter" data-filter="monitoring">Monitoring</button>
@@ -223,21 +304,27 @@
 
   <section class="grid" id="projectGrid">
 
+    <!-- PROJECT 1 -->
     <article class="project" data-category="infrastructure">
       <div class="project-content">
         <div class="category">Infrastructure / Identity</div>
         <h2>Active Directory Migration</h2>
+
         <p class="description">
           Migration from Windows Server 2016 to Windows Server 2022,
-          including secondary domain controller deployment, replication,
-          DNS, FSMO transfer and domain controller validation.
+          involving secondary domain controller deployment, Active
+          Directory replication, DNS configuration, FSMO role transfer
+          and domain controller validation.
         </p>
+
         <div class="tags">
           <span class="tag">Windows Server 2022</span>
           <span class="tag">Active Directory</span>
           <span class="tag">PowerShell</span>
           <span class="tag">DNS</span>
+          <span class="tag">DFSR</span>
         </div>
+
         <div class="links">
           <a href="projects/active-directory-migration.html">View case study →</a>
           <a href="blog/active-directory-migration.html">Read blog →</a>
@@ -245,21 +332,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 2 -->
     <article class="project" data-category="infrastructure">
       <div class="project-content">
         <div class="category">Backup / Infrastructure</div>
         <h2>Veeam Backup Infrastructure</h2>
+
         <p class="description">
           Designing and configuring backup infrastructure using Veeam,
-          local repositories, cloud connectivity and backup
-          retention strategies.
+          local repositories, Azure connectivity, VPN configuration,
+          backup scheduling and cloud backup strategies.
         </p>
+
         <div class="tags">
           <span class="tag">Veeam</span>
           <span class="tag">Windows Server</span>
+          <span class="tag">Azure</span>
+          <span class="tag">VPN</span>
           <span class="tag">Backup</span>
-          <span class="tag">Cloud</span>
         </div>
+
         <div class="links">
           <a href="projects/veeam-backup.html">View case study →</a>
           <a href="blog/veeam-backup.html">Read blog →</a>
@@ -267,21 +359,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 3 -->
     <article class="project" data-category="infrastructure">
       <div class="project-content">
         <div class="category">Virtualization / Homelab</div>
         <h2>Proxmox Homelab</h2>
+
         <p class="description">
           Building a self-hosted virtualization environment for Linux
-          workloads, network experimentation, containerization and
-          Kubernetes learning.
+          workloads, network experimentation, containerization,
+          Kubernetes learning and infrastructure administration.
         </p>
+
         <div class="tags">
           <span class="tag">Proxmox VE</span>
           <span class="tag">Linux</span>
           <span class="tag">Docker</span>
           <span class="tag">Kubernetes</span>
+          <span class="tag">Networking</span>
         </div>
+
         <div class="links">
           <a href="projects/proxmox-homelab.html">View case study →</a>
           <a href="blog/proxmox-homelab.html">Read blog →</a>
@@ -289,21 +386,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 4 -->
     <article class="project" data-category="cloud">
       <div class="project-content">
         <div class="category">Cloud / Networking</div>
         <h2>Azure Infrastructure</h2>
+
         <p class="description">
-          Cloud infrastructure exploration involving Azure networking,
-          virtual machines, VPN connectivity, storage and infrastructure
-          administration.
+          Cloud infrastructure deployment and administration involving
+          Azure virtual machines, virtual networks, VPN connectivity,
+          storage, backup and cloud networking.
         </p>
+
         <div class="tags">
           <span class="tag">Microsoft Azure</span>
           <span class="tag">VNet</span>
-          <span class="tag">VPN</span>
+          <span class="tag">VPN Gateway</span>
           <span class="tag">Storage</span>
+          <span class="tag">Cloud</span>
         </div>
+
         <div class="links">
           <a href="projects/azure-infrastructure.html">View case study →</a>
           <a href="blog/azure-infrastructure.html">Read blog →</a>
@@ -311,20 +413,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 5 -->
     <article class="project" data-category="monitoring">
       <div class="project-content">
         <div class="category">Monitoring / Observability</div>
         <h2>Prometheus & Grafana Monitoring</h2>
+
         <p class="description">
           Deploying monitoring services on Ubuntu, configuring Prometheus
-          scrape targets, Node Exporter and PostgreSQL metrics collection.
+          scrape targets, Node Exporter and PostgreSQL metrics collection
+          for infrastructure observability.
         </p>
+
         <div class="tags">
           <span class="tag">Prometheus</span>
           <span class="tag">Grafana</span>
           <span class="tag">Ubuntu</span>
           <span class="tag">PostgreSQL</span>
+          <span class="tag">Node Exporter</span>
         </div>
+
         <div class="links">
           <a href="projects/monitoring-stack.html">View case study →</a>
           <a href="blog/monitoring-stack.html">Read blog →</a>
@@ -332,21 +440,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 6 -->
     <article class="project" data-category="automation">
       <div class="project-content">
         <div class="category">Automation / Microsoft 365</div>
         <h2>Hikvision to SharePoint Automation</h2>
+
         <p class="description">
-          Automating daily video exports from a Hikvision NVR
-          and uploading recordings to a SharePoint document library
-          using Microsoft Graph.
+          Automating daily video exports from a Hikvision NVR and
+          uploading recordings to a SharePoint document library
+          using Microsoft Graph and an Azure application registration.
         </p>
+
         <div class="tags">
           <span class="tag">Hikvision NVR</span>
           <span class="tag">PowerShell</span>
           <span class="tag">Microsoft Graph</span>
           <span class="tag">SharePoint</span>
+          <span class="tag">Azure AD</span>
         </div>
+
         <div class="links">
           <a href="projects/hikvision-sharepoint.html">View case study →</a>
           <a href="blog/hikvision-sharepoint.html">Read blog →</a>
@@ -354,21 +467,26 @@
       </div>
     </article>
 
+    <!-- PROJECT 7 -->
     <article class="project" data-category="security">
       <div class="project-content">
         <div class="category">Network / Security</div>
         <h2>Enterprise Network Security</h2>
+
         <p class="description">
           Enterprise networking and firewall administration involving
-          Fortinet, Sophos, VLAN segmentation, DHCP, access control
-          and network troubleshooting.
+          Fortinet, Sophos, VLAN segmentation, DHCP, access control,
+          Layer 3 switching and network troubleshooting.
         </p>
+
         <div class="tags">
           <span class="tag">Fortinet</span>
           <span class="tag">Sophos</span>
           <span class="tag">VLANs</span>
+          <span class="tag">Layer 3 Switching</span>
           <span class="tag">Networking</span>
         </div>
+
         <div class="links">
           <a href="projects/network-security.html">View case study →</a>
           <a href="blog/network-security.html">Read blog →</a>
@@ -376,16 +494,52 @@
       </div>
     </article>
 
+    <!-- PROJECT 8 -->
+    <article class="project" data-category="linux">
+      <div class="project-content">
+        <div class="category">Linux / Cloud / DevOps</div>
+        <h2>DigitalOcean Linux Infrastructure Lab</h2>
+
+        <p class="description">
+          Deployment and administration of Ubuntu cloud infrastructure
+          involving Docker containerization, Apache Guacamole remote
+          access, PostgreSQL database services, SSH, SFTP and
+          Prometheus-Grafana monitoring.
+        </p>
+
+        <div class="tags">
+          <span class="tag">Ubuntu 24.04</span>
+          <span class="tag">Docker</span>
+          <span class="tag">Docker Compose</span>
+          <span class="tag">PostgreSQL</span>
+          <span class="tag">Guacamole</span>
+          <span class="tag">Prometheus</span>
+          <span class="tag">Grafana</span>
+          <span class="tag">SSH / SFTP</span>
+        </div>
+
+        <div class="links">
+          <a href="projects/digitalocean-linux.html">View case study →</a>
+          <a href="blog/digitalocean-linux.html">Read blog →</a>
+        </div>
+      </div>
+    </article>
+
   </section>
 
-  <p class="empty" id="emptyMessage">No projects in this category yet.</p>
+  <p class="empty" id="emptyMessage">
+    No projects in this category yet.
+  </p>
 
   <section class="blog-cta">
-    <h2>Want to understand how these projects were built?</h2>
+    <h2>Explore the technical knowledge behind my projects.</h2>
+
     <p>
-      Visit my technical blog for implementation guides, troubleshooting
-      walkthroughs, architecture discussions and lessons learned.
+      My blog documents implementation guides, troubleshooting
+      experiences, architecture decisions, technical tutorials
+      and lessons learned from real-world infrastructure work.
     </p>
+
     <a href="blog/index.html">Explore the technical blog →</a>
   </section>
 
@@ -413,7 +567,8 @@
           selected === "all" ||
           project.dataset.category === selected;
 
-        project.style.display = matches ? "block" : "none";
+        project.style.display = matches ? "flex" : "none";
+
         if (matches) visible++;
       });
 
