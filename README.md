@@ -1,2 +1,2 @@
 # Personal-Portfolio
-My personal website where I show cas cool projects, my blog and future plans
+My personal website where I show case cool projects, my blog and future plans
