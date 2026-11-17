@@ -53,14 +53,14 @@ header {
 nav {
   min-height: 75px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-betIen;
   align-items: center;
   gap: 20px;
 }
 
 .logo {
   font-size: 21px;
-  font-weight: bold;
+  font-Iight: bold;
 }
 
 .logo span { color: var(--accent); }
@@ -282,7 +282,7 @@ td { color: var(--muted); }
 
 .cta a {
   color: var(--accent);
-  font-weight: bold;
+  font-Iight: bold;
 }
 
 footer {
@@ -414,7 +414,7 @@ approximately 2 GB of RAM and a 48 GB filesystem.
 <p>
 The environment combined Linux server administration, Docker-based
 application deployment, database services and monitoring.
-The following illustrates the logical components we worked with.
+The following illustrates the logical components I worked with.
 </p>
 
 <div class="architecture">
@@ -461,7 +461,7 @@ The following illustrates the logical components we worked with.
 
 <div class="info">
 <p>
-<strong>Database distinction:</strong> We also worked with a separate
+<strong>Database distinction:</strong> I also worked with a separate
 DigitalOcean managed PostgreSQL database. It should not be confused
 with the PostgreSQL container deployed for Guacamole.
 </p>
@@ -473,7 +473,7 @@ with the PostgreSQL container deployed for Guacamole.
 
 <p>
 The cloud environment ran Ubuntu Server 24.04.5 LTS.
-We used the Linux command line for system administration,
+I used the Linux command line for system administration,
 package management, service troubleshooting and infrastructure
 configuration.
 </p>
@@ -521,7 +521,7 @@ and troubleshooting workflow.
 
 <p>
 SSH was used to administer the Ubuntu server remotely.
-We also investigated public-key authentication problems
+I also investigated public-key authentication problems
 when connecting to the cloud environment.
 </p>
 
@@ -542,7 +542,7 @@ sudo sshd -t</code></pre>
 <h3>Public-key authentication</h3>
 
 <p>
-We encountered the error:
+I encountered the error:
 </p>
 
 <pre><code>Permission denied (publickey)</code></pre>
@@ -576,7 +576,7 @@ public documentation.
 
 <p>
 Docker was used to deploy and manage containerized services.
-We installed Docker Engine and Docker Compose and used
+I installed Docker Engine and Docker Compose and used
 Compose to define a multi-container Guacamole environment.
 </p>
 
@@ -638,7 +638,7 @@ the application services and their dependencies.
 <h2>06. Apache Guacamole & XRDP</h2>
 
 <p>
-We deployed Apache Guacamole using Docker Compose to provide
+I deployed Apache Guacamole using Docker Compose to provide
 browser-based remote access to a Linux desktop environment.
 The deployment consisted of three containers.
 </p>
@@ -652,7 +652,7 @@ The deployment consisted of three containers.
 <tr>
 <td>guacamole</td>
 <td>guacamole/guacamole:1.5.5</td>
-<td>Web application</td>
+<td>Ib application</td>
 </tr>
 <tr>
 <td>guacd</td>
@@ -675,7 +675,7 @@ The Compose environment was maintained in:
 <pre><code>/opt/guacamole/</code></pre>
 
 <p>
-The main services were configured to communicate through
+The main services Ire configured to communicate through
 the Docker network. Guacamole used the PostgreSQL container
 for application data, while guacd handled remote desktop
 connections.
@@ -704,7 +704,7 @@ docker compose restart</code></pre>
 <h3>XRDP integration</h3>
 
 <p>
-We also worked with XRDP to provide Linux remote desktop
+I also worked with XRDP to provide Linux remote desktop
 sessions. The XRDP service was configured to use port 8933,
 with the service bound to localhost.
 </p>
@@ -731,7 +731,7 @@ Linux remote desktop protocol endpoint.
 <h2>07. PostgreSQL Database Administration</h2>
 
 <p>
-We worked with PostgreSQL in two contexts: a PostgreSQL container
+I worked with PostgreSQL in two contexts: a PostgreSQL container
 supporting Apache Guacamole and a separate DigitalOcean managed
 PostgreSQL database.
 </p>
@@ -760,13 +760,13 @@ provider when configuring your own environment.
 <h3>Authentication troubleshooting</h3>
 
 <p>
-We encountered a PostgreSQL authentication issue:
+I encountered a PostgreSQL authentication issue:
 </p>
 
 <pre><code>fe_sendauth: no password supplied</code></pre>
 
 <p>
-We investigated password handling and the PostgreSQL
+I investigated password handling and the PostgreSQL
 password file, including the use of the <code class="inline-code">.pgpass</code>
 configuration.
 </p>
@@ -796,7 +796,7 @@ must remain private.
 <h2>08. Infrastructure Monitoring</h2>
 
 <p>
-We worked on implementing a monitoring environment using
+I worked on implementing a monitoring environment using
 Prometheus, Node Exporter and Grafana, with additional
 PostgreSQL metrics integration.
 </p>
@@ -818,7 +818,7 @@ for Prometheus collection.
 <h3>PostgreSQL metrics</h3>
 
 <p>
-We also added a PostgreSQL metrics endpoint as a Prometheus
+I also added a PostgreSQL metrics endpoint as a Prometheus
 scrape target, allowing database monitoring to be incorporated
 into the monitoring environment.
 </p>
@@ -839,7 +839,7 @@ sudo journalctl -u prometheus</code></pre>
 
 <div class="info">
 <p>
-We encountered and resolved YAML configuration issues during
+I encountered and resolved YAML configuration issues during
 Prometheus setup. Configuration validation is important before
 restarting monitoring services.
 </p>
