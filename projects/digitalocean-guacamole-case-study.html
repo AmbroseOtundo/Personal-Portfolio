@@ -1,936 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="Full HTML conversion of the Guacamole and XFCE deployment and operations runbook.">
-<title>Browser-Based Linux Desktop — Deployment &amp; Operations Runbook</title>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building a Linux Desktop in the Browser | Ambrose Onsare</title>
 <style>
-:root{--bg:#080d18;--panel:#101a2b;--line:#293a52;--text:#e8eef8;--muted:#9fb0c5;--accent:#55d6be}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.6 Inter,Segoe UI,Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;background:#080d18f2;border-bottom:1px solid var(--line);backdrop-filter:blur(10px)}
-nav{width:min(1200px,94%);min-height:64px;margin:auto;display:flex;align-items:center;justify-content:space-between;gap:18px}
-a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
-.brand{font-weight:800;color:var(--text)}.navlinks{display:flex;gap:18px;flex-wrap:wrap;font-size:.9rem}
-main{width:min(1120px,94%);margin:auto;padding:48px 0 70px}
-.eyebrow{color:var(--accent);font-size:.78rem;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.12;margin:12px 0}
-.intro{color:#c0ccdc;max-width:900px}
-.notice{margin:24px 0;padding:16px 18px;border-left:3px solid var(--accent);background:#10242b;border-radius:0 12px 12px 0;color:#d7e9e7}
-.toc{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 38px}
-.toc a{border:1px solid var(--line);background:var(--panel);padding:6px 10px;border-radius:8px;font-size:.82rem}
-.source-page{background:#fff;color:#111;border-radius:12px;margin:28px 0;padding:clamp(14px,3vw,32px);box-shadow:0 10px 30px #0004;overflow:hidden}
-.page-label{font:700 .72rem/1.2 Inter,Arial,sans-serif;letter-spacing:1.4px;color:#52647b;border-bottom:1px solid #d6dce5;padding-bottom:10px;margin-bottom:16px}
-pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:clamp(10px,1.05vw,13px)/1.45 "Courier New",Consolas,monospace;color:#151b25}
-.diagram{margin:24px 0 8px;padding:14px;background:#f4f7fb;border:1px solid #cbd5e1;border-radius:8px}
-.diagram img{display:block;width:100%;height:auto}.diagram figcaption{font:12px/1.4 Arial,sans-serif;color:#475569;margin-top:8px}
-footer{border-top:1px solid var(--line);padding:24px 3%;color:var(--muted);font-size:.88rem}
-@media(max-width:650px){nav{align-items:flex-start;flex-direction:column;padding:12px 0}.source-page{padding:12px}pre{font-size:10px}}
-@media print{body{background:white}header,.toc,.notice{display:none}main{width:100%;padding:0}.source-page{box-shadow:none;border:0;border-radius:0;page-break-after:always;margin:0;padding:12mm}}
-</style>
-</head>
-<body>
-<header><nav>
-<a class="brand" href="../index.html">AMBROSE ONSARE</a>
-<div class="navlinks"><a href="../index.html">Home</a><a href="../projects.html">Projects</a><a href="../blog/index.html">Blog</a><a href="../index.html#about">About</a><a href="../index.html#contact">Contact</a></div>
-</nav></header>
-<main>
-<div class="eyebrow">Infrastructure Engineering · DigitalOcean · Linux</div>
-<h1>Browser-Based Linux Desktop</h1>
-<p class="intro"><strong>Deployment &amp; Operations Runbook</strong><br>
-Apache Guacamole • XRDP • XFCE • PostgreSQL • Docker Compose</p>
-<div class="notice">This page is a direct HTML conversion of the supplied 15-page runbook. The source wording, commands, headings, warnings, tables and appendices are retained as extracted text, with the original architecture illustration embedded on page 4. Only the web presentation and page navigation have been added.</div>
-<div class="toc">
-<a href="#page-1">Page 1</a><a href="#page-2">Page 2</a><a href="#page-3">Page 3</a><a href="#page-4">Page 4</a><a href="#page-5">Page 5</a><a href="#page-6">Page 6</a><a href="#page-7">Page 7</a><a href="#page-8">Page 8</a><a href="#page-9">Page 9</a><a href="#page-10">Page 10</a><a href="#page-11">Page 11</a><a href="#page-12">Page 12</a><a href="#page-13">Page 13</a><a href="#page-14">Page 14</a><a href="#page-15">Page 15</a>
+:root{--bg:#0b1020;--panel:#121a2d;--panel2:#0e1728;--text:#e8edf7;--muted:#a8b3c7;--line:#26334b;--accent:#69d5c4;--accent2:#91a9ff;--warn:#f2c879;--code:#070c16}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:16px/1.75 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+.wrap{max-width:980px;margin:auto;padding:48px 24px 80px}.eyebrow{color:var(--accent);font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:700}
+h1{font-size:clamp(2.3rem,6vw,4.3rem);line-height:1.08;letter-spacing:-.045em;margin:14px 0 20px;max-width:850px}h2{font-size:1.65rem;line-height:1.25;margin:54px 0 14px;letter-spacing:-.02em}h3{font-size:1.08rem;margin:28px 0 8px;color:#dce6fa}p{color:#c5cede;margin:12px 0}.lead{font-size:1.17rem;color:#d4deef;max-width:800px}.meta{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0 34px}.pill{border:1px solid var(--line);background:#111a2b;color:#c8d5e8;padding:5px 11px;border-radius:999px;font-size:.82rem}.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:24px 0}.callout{border-left:3px solid var(--accent);background:#10212a;padding:16px 20px;border-radius:0 12px 12px 0;margin:24px 0;color:#d4e7e5}.warning{border-left-color:var(--warn);background:#251f15}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:22px 0}.flow div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px 10px;text-align:center;font-size:.87rem;color:#dce6f5}.flow b{display:block;color:var(--accent);font-size:.92rem;margin-bottom:4px}.flow small{color:var(--muted)}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:var(--code);border:1px solid #26344b;border-radius:12px;padding:17px 19px;color:#cce7df;font: .88rem/1.65 ui-monospace,SFMono-Regular,Consolas,monospace;margin:14px 0 22px}code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#b9e8dc;background:#0a1422;padding:2px 5px;border-radius:5px;font-size:.9em}.caption{font-size:.85rem;color:#8f9db4}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.tile{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px}.tile strong{display:block;color:#e8f0ff;margin-bottom:5px}.tile p{font-size:.92rem;margin:0}.status{display:inline-block;color:var(--accent);font-size:.76rem;text-transform:uppercase;letter-spacing:.08em;font-weight:700}.status.pending{color:var(--warn)}ul,ol{color:#c5cede;padding-left:24px}li{margin:8px 0}a{color:var(--accent2)}.foot{border-top:1px solid var(--line);margin-top:60px;padding-top:22px;color:#8795ad;font-size:.86rem}
+@media(max-width:700px){.wrap{padding:32px 17px 60px}.flow{grid-template-columns:1fr}.grid{grid-template-columns:1fr}h2{margin-top:42px}}
+</style></head>
+<body><main class="wrap">
+<div class="eyebrow">Infrastructure project · DigitalOcean · Linux · Remote access</div>
+<h1>A Linux desktop, delivered through a browser.</h1>
+<p class="lead">I wanted a way to access a full Ubuntu desktop without having to install a remote-desktop client on every machine. The idea was to open a browser, sign in, and land in an XFCE session running on a small DigitalOcean server. Getting that experience working was the project; making the connection private and dependable was the real engineering work.</p>
+<div class="meta"><span class="pill">Ubuntu Server 24.04.5 LTS</span><span class="pill">Apache Guacamole 1.5.5</span><span class="pill">XRDP + XFCE</span><span class="pill">Docker Compose</span><span class="pill">PostgreSQL 16</span></div>
+
+<h2>What I was building</h2>
+<p>Think of it as a Linux workstation that lives on a server, with the browser acting as the screen and keyboard. Guacamole provides the browser-based interface. Its proxy service, <code>guacd</code>, speaks RDP to XRDP on the Ubuntu host. XRDP starts the XFCE desktop for the <code>xmldesktop</code> account, while PostgreSQL keeps Guacamole's authentication and connection details.</p>
+<p>I kept the deployment deliberately lightweight: the observed DigitalOcean droplet had 2 GiB of RAM and a 48 GB disk. Docker Compose ran the Guacamole web application, <code>guacd</code>, and PostgreSQL; XRDP and XFCE ran directly on Ubuntu.</p>
+<div class="flow"><div><b>My browser</b><small>localhost:8080</small></div><div><b>SSH tunnel</b><small>Encrypted entry</small></div><div><b>Guacamole</b><small>Web client</small></div><div><b>guacd</b><small>RDP proxy</small></div><div><b>XRDP + XFCE</b><small>Linux desktop</small></div></div>
+<p class="caption">PostgreSQL sits alongside Guacamole inside the Docker network and stores its authentication and connection configuration. The diagram shows the user-facing session path, not every internal service connection.</p>
+
+<h2>First, I prepared the Ubuntu host</h2>
+<p>I started with a clean Ubuntu Server 24.04.5 LTS droplet and connected over SSH using a key from my Windows workstation. Before touching the remote desktop pieces, I updated the host and installed the packages needed for XFCE, XRDP, session management, firewalling and ACLs.</p>
+<pre>apt update
+apt upgrade -y
+apt install -y xfce4 xfce4-session xrdp dbus-x11 acl ufw curl ca-certificates openssl</pre>
+<p>Docker and the Compose plugin were installed on the host as the container runtime. The versions observed during the work were Docker 29.1.3 and Docker Compose 2.40.3. I also created or verified the dedicated Linux account, <code>xmldesktop</code>, and added it to the <code>sudo</code> group because I needed to perform administrative tasks from the desktop session.</p>
+<pre>id xmldesktop || adduser xmldesktop
+usermod -aG sudo xmldesktop
+runuser -u xmldesktop -- sh -c 'printf "%s\\n" xfce4-session &gt; /home/xmldesktop/.xsession'
+chown xmldesktop:xmldesktop /home/xmldesktop/.xsession
+chmod 600 /home/xmldesktop/.xsession</pre>
+<p>That <code>.xsession</code> file is a small but important detail: it tells XRDP which desktop session to launch. In this case, it launches <code>xfce4-session</code>. I learned to fully log out and reconnect after changing group membership; an already-running session does not automatically pick up new groups.</p>
+
+<h2>The networking decision that mattered</h2>
+<p>This is where I was careful about the design. I did not want to expose the Guacamole portal, the RDP service, the proxy or the database directly to the internet. The public-facing administrative entry remained SSH. Guacamole was bound to the server's loopback address on <code>127.0.0.1:8080</code>, and XRDP listened on the Docker bridge gateway at <code>172.28.0.1:8933</code>.</p>
+<p>I created or verified a dedicated Docker bridge called <code>desktop-net</code>, using <code>172.28.0.0/24</code> with gateway <code>172.28.0.1</code>. That gave the Guacamole proxy a private route to XRDP without making RDP a public service.</p>
+<pre>docker network inspect desktop-net
+
+# For a fresh deployment only, if the network does not exist:
+docker network create --driver bridge --subnet 172.28.0.0/24 --gateway 172.28.0.1 desktop-net</pre>
+<p>Then I configured XRDP to listen on <code>172.28.0.1:8933</code> and restricted the UFW rule so only traffic from the Docker subnet, arriving on the Docker bridge interface, could reach it. During troubleshooting I briefly had a broad allow rule for port 8933; I removed it. The lesson is simple: don't solve a connectivity problem by opening a service to the whole internet.</p>
+<pre># In /etc/xrdp/xrdp.ini, under [Globals]:
+port=tcp://172.28.0.1:8933
+
+# Allow only the Docker subnet on the actual bridge interface:
+ufw allow in on br-&lt;actual-bridge-name&gt; from 172.28.0.0/24 to 172.28.0.1 port 8933 proto tcp
+
+# Verify the listener and firewall:
+ss -lntp | grep ':8933'
+ufw status verbose</pre>
+<div class="callout"><strong>Security principle:</strong> I kept TCP 8933 (XRDP), 4822 (guacd), 5432 (PostgreSQL), and the Guacamole web port 8080 off the public interface. The current access method is SSH plus a local tunnel—not a publicly exposed web portal.</div>
+
+<h2>Then I brought up Guacamole and its database</h2>
+<p>With the host and private network ready, I created <code>/opt/guacamole</code> for the Compose deployment. PostgreSQL ran as a container with a persistent volume, while the Guacamole web app and <code>guacd</code> shared the same Docker network. The web port was published only on host loopback.</p>
+<p>I kept the database password in a protected <code>.env</code> file rather than putting it in the Compose file or source control. The database was named <code>guac_db</code>, the database role was <code>guac_user</code>, and the PostgreSQL container was named <code>guac-postgres</code>.</p>
+<pre>mkdir -p /opt/guacamole
+cd /opt/guacamole
+chmod 700 /opt/guacamole
+printf "DB_PASSWORD=%s\\n" "$(openssl rand -hex 32)" &gt; .env
+chmod 600 .env</pre>
+<p>For a new database, Guacamole needs its PostgreSQL schema initialized using the same application version that will run. In this deployment, the final observed Guacamole and <code>guacd</code> versions were both 1.5.5, so the schema-generation step was aligned to 1.5.5 as well. I treated schema initialization as a one-time setup step—not something to rerun as a generic fix on an existing database.</p>
+<pre>docker compose up -d postgres
+
+docker run --rm guacamole/guacamole:1.5.5 \
+  /opt/guacamole/bin/initdb.sh --postgresql &gt; /opt/guacamole/initdb.sql
+
+docker exec -i guac-postgres psql -v ON_ERROR_STOP=1 \
+  -U guac_user -d guac_db &lt; /opt/guacamole/initdb.sql</pre>
+<p>Once the stack was configured, I validated the Compose file, started the services and checked the container states and logs. I also tested the actual HTTP endpoint; a container showing “Up” by itself was not enough to prove the web application had finished starting.</p>
+<pre>docker compose config -q
+docker compose pull
+docker compose up -d
+docker compose ps -a
+docker compose logs --tail=60 guacamole
+docker compose logs --tail=40 guacd
+curl -I --max-time 10 http://127.0.0.1:8080/guacamole/</pre>
+
+<h2>Making the browser connection work</h2>
+<p>From Windows PowerShell, I opened an SSH local port forward and left that terminal running. It carried my browser traffic securely to the Guacamole service listening on the Ubuntu server's loopback interface. I then opened the local URL in the browser.</p>
+<pre>ssh -N -L 8080:127.0.0.1:8080 root@&lt;YOUR_SERVER_IP&gt;</pre>
+<pre>http://127.0.0.1:8080/guacamole/</pre>
+<p>Inside Guacamole, I configured an RDP connection to host <code>172.28.0.1</code>, port <code>8933</code>, using the <code>xmldesktop</code> Linux account. XRDP was using its default self-signed certificate, which caused certificate validation warnings during the first connection attempts. The connection eventually authenticated successfully; the certificate exception was a workaround for this private bridge setup, not the ideal long-term certificate posture.</p>
+<p>The initial Guacamole administrator login used the default <code>guacadmin</code> credentials. The runbook correctly flags password rotation as something that must be confirmed; it does not claim that this was completed. If the default password is still in use, it must be changed before the system is treated as secure.</p>
+
+<h2>The troubleshooting was the real project</h2>
+<p>Things did not work perfectly on the first attempt. I had to trace each failure through the layer responsible for it rather than changing several things at once.</p>
+<div class="grid">
+<div class="tile"><span class="status">Connectivity</span><strong>Guacamole could not reach XRDP</strong><p>The RDP target was not reachable through the Docker bridge and host firewall. I checked the bridge, bound XRDP to the gateway address, and narrowed the firewall rule to the Docker subnet.</p></div>
+<div class="tile"><span class="status">TLS</span><strong>XRDP certificate validation failed</strong><p>XRDP was presenting its default self-signed certificate. The TLS handshake later succeeded using the connection's certificate-handling option, while keeping the RDP target private.</p></div>
+<div class="tile"><span class="status">Application stability</span><strong>RDP sessions closed after login</strong><p>With Guacamole/guacd 1.6.0, logs showed a display-layer assertion failure after XRDP had authenticated the user. The observed signature matched a reported Guacamole issue, so I rolled both components back together to 1.5.5.</p></div>
+<div class="tile"><span class="status">Version mismatch</span><strong>Guacamole container kept restarting</strong><p>The Compose configuration used <code>POSTGRESQL_USERNAME</code>, but the 1.5.5 image expected <code>POSTGRESQL_USER</code>. Correcting the version-specific variable allowed the web container to start.</p></div>
+<div class="tile"><span class="status">Linux permissions</span><strong>Desktop user was not in sudoers</strong><p>The user had been added to the sudo group, but the existing session had not refreshed its group membership. A full logout and reconnect, followed by <code>sudo whoami</code>, was the right test.</p></div>
+<div class="tile"><span class="status pending">Still to verify</span><strong>Shared folder permissions</strong><p><code>/opt/xmlfiles</code> was the target discussed, but the final path and ACL output were not captured. I left this as a verification task rather than claiming the permissions were proven.</p></div>
 </div>
-
-    <section class="source-page" id="page-1">
-      <div class="page-label">RUNBOOK PAGE 1 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-
-
-
-DEPLOYMENT &amp; OPERATIONS RUNBOOK
-Browser-Based Linux Desktop
-
-Apache Guacamole • XRDP • XFCE • PostgreSQL • Docker Compose
-
-
-
-Purpose: provide a repeatable build, validation, troubleshooting and rollback procedure for the browser-accessible XFCE
-desktop running on a DigitalOcean Ubuntu droplet.
-Prepared from the setup and troubleshooting evidence available through 25 October 2026. This is an operational record of
-the deployed approach, not a claim that all production-hardening steps have been completed.
-
-    Document control            Value
-
-    Document version              1.0
-
-      Last observed state           Guacamole 1.5.5 and guacd 1.5.5 running; PostgreSQL healthy; portal mapped to
-                                     127.0.0.1:8080; desktop had connected successfully after troubleshooting.
-
-      Server                         DigitalOcean droplet; hostname xml-vm; public IPv4 142.93.197.124
-
-     Observed OS / sizing          Ubuntu Server 24.04.5 LTS; 2 GiB RAM; 48 GB disk
-
-     Access model currently        Browser access via an SSH local tunnel; no direct public HTTP/HTTPS portal has been
-     implemented                   configured.
-
-     Items requiring final          Guacamole admin password rotation; folder ACLs and exact /opt/xmlfiles path; repeated-
-      verification                    session stability under 1.5.5; HTTPS/public access design.
-
-
-  Critical safety rule: Do not publish TCP 8933 (XRDP), 4822 (guacd), 5432 (PostgreSQL), or the Guacamole web port 8080
-  directly to the internet. The current intended external entry point is SSH/TCP 22, with Guacamole bound to server
-  loopback.
-
-
-
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 1</pre>
-      
-    </section>
-    <section class="source-page" id="page-2">
-      <div class="page-label">RUNBOOK PAGE 2 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-Contents
-
-•    1. Executive summary and confirmed state
-•    2. Architecture and network flows
-•    3. Components, addresses and ports
-•    4. Prerequisites and provisioning the host
-•    5. Creating the desktop user and XFCE session
-•    6. Docker network, XRDP binding and firewall
-•    7. PostgreSQL and Guacamole deployment
-•    8. First login and configuring the RDP connection
-•    9. Folder access and administrator permissions
-•   10. Operational validation checklist
-•   11. Hitches encountered and resolutions
-•   12. Backup, restore and rollback procedures
-•   13. Security hardening and outstanding work
-•   Appendix A. Reference Compose configuration
-•   Appendix B. Quick troubleshooting commands
-•   Appendix C. Version-specific PostgreSQL environment variables
-•   References
-
- Evidence notation: “Confirmed” means the value appeared in terminal output or was explicitly observed in the
-  conversation. “Verify” means the transcript does not prove the final state; run the listed check before relying on it.
-
-
-
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 2</pre>
-      
-    </section>
-    <section class="source-page" id="page-3">
-      <div class="page-label">RUNBOOK PAGE 3 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-1. Executive summary and confirmed state
-
-The solution provides a lightweight Linux desktop in a browser by chaining Apache Guacamole (web client), guacd (RDP
-proxy), XRDP (RDP server), and XFCE (desktop environment). PostgreSQL stores Guacamole authentication and connection
-data. Docker Compose runs Guacamole, guacd and PostgreSQL; XRDP and XFCE run on the Ubuntu host.
-The server was accessed as root over SSH using a key from Windows PowerShell. The final access path is intentionally
-private: the Guacamole HTTP service is published only on 127.0.0.1:8080 on the host, and a local SSH tunnel makes that
-endpoint available to the browser on the operator PC.
-
-      Area                  Observed / intended final setting                                            Status
-
-      Host OS                Ubuntu 24.04.5 LTS; hostname xml-vm                                       Confirmed
-
-      Docker                 Docker 29.1.3; Docker Compose 2.40.3                                     Observed in history;
-                                                                                                            re-check after
-                                                                                                                       rebuild
-
-      Guacamole web app       guacamole/guacamole:1.5.5                                               Confirmed running
-                                                                                             on 25 Oct 2026
-
-     RDP proxy                guacamole/guacd:1.5.5                                                   Confirmed
-                                                                                                                  healthy/running
-
-      Database                  postgres:16-alpine; container guac-postgres; database guac_db; role guac_user    Confirmed healthy;
-                                                                                                                     credentials remain
-                                                                                                                  secret
-
-      Docker bridge             desktop-net; 172.28.0.0/24; gateway 172.28.0.1                               Confirmed
-
-      Host XRDP                172.28.0.1:8933; TLS enabled with default self-signed certificate                 Confirmed by XRDP
-                                                                                                                    logs and socket
-                                                                                                            output
-
-      Desktop               XFCE launched using /home/xmldesktop/.xsession containing xfce4-session       Confirmed from
-                                                                                                                                prior commands
-
-       Linux account             xmldesktop; UID 1004; supplementary groups include sudo and users             Confirmed at 25
-                                                                                                  Oct 2026
-
-     Web portal               127.0.0.1:8080/guacamole/ through SSH local forwarding                       Confirmed via
-                                                                                                             successful browser
-                                                                                                     access
-
-       Folder ACLs               Target identified in discussion as /opt/xmlfiles                                   Exact path/ACL
-                                                                                             must be verified
-
-       Direct public HTTPS       Not configured in the evidence available                                      Pending
-
-
-2. Architecture and network flows
-
-Figure 1 shows the intended and observed traffic path. Only the SSH tunnel crosses the public network in the current
-configuration. The Docker bridge is used to let guacd reach the host-bound XRDP listener without publishing RDP on a public
-interface.
-
-
-
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 3</pre>
-      
-    </section>
-    <section class="source-page" id="page-4">
-      <div class="page-label">RUNBOOK PAGE 4 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-
-
-
-
-Figure 1. Current logical topology. “/opt/xmlfiles” is the target folder discussed during troubleshooting; verify the actual path and its ACLs on the live
-                                                                        server.
-
-2.1 Connection flow
-
-1.  Windows browser opens http://127.0.0.1:8080/guacamole/.
-2.  Windows OpenSSH forwards local TCP 8080 through the SSH session to server-side 127.0.0.1:8080.
-3.  Docker publishes only 127.0.0.1:8080 on the host and forwards traffic to the Guacamole container TCP 8080.
-4.  Guacamole uses guacd over the Docker network (TCP 4822) and PostgreSQL via the Compose service DNS name
-    postgres (TCP 5432).
-5.  For the desktop connection, guacd reaches the host gateway 172.28.0.1 on TCP 8933. XRDP creates/reconnects the
-    xmldesktop XFCE session.
-6.  Host UFW permits TCP 8933 only from the Docker bridge subnet/interface. This is not a public RDP listener.
-
-3. Components, addresses and ports
-
-     Component            Address / port                       Exposure and purpose
-
-     SSH / OpenSSH           Public IPv4 142.93.197.124 TCP 22        Administrative entry; use SSH keys. Restrict source IPs where
-                                                                                 practical.
-
-      Guacamole web         Host 127.0.0.1:8080 -&gt; container 8080    Loopback only; browser reaches it through SSH forwarding.
-
-      guacd                 Docker DNS name guacd:4822            Internal Docker network only.
-
-      PostgreSQL             Docker DNS name postgres:5432          Internal Docker network only; persistent volume
-                                                                        postgres_data.
-
-     XRDP                  Host bridge gateway 172.28.0.1:8933     Allowed from Docker subnet 172.28.0.0/24 only on the bridge
-                                                                                interface.
-
-     XFCE session          XRDP display :10 observed                 Interactive desktop for Linux account xmldesktop.
-
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 4</pre>
-      
-    <figure class="diagram">
-      <img src="assets/architecture-diagram.png" alt="Original architecture diagram from page 4 of the deployment runbook">
-      <figcaption>Figure 1. Original logical topology diagram from the supplied runbook (page 4).</figcaption>
-    </figure>
-    </section>
-    <section class="source-page" id="page-5">
-      <div class="page-label">RUNBOOK PAGE 5 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-     Component            Address / port                       Exposure and purpose
-
-        Existing UFW TCP 14344   Port 14344                        An allow rule existed in captured status output; purpose was
-                                                                      not established. Identify owner before carrying to a new host or
-                                                                   removing it.
-
-
- Do not confuse addresses: 142.93.197.124 is the server public IP; 127.0.0.1 refers to the loopback interface of the
- machine where the address is evaluated; 172.28.0.1 is the Docker bridge gateway on the Ubuntu host.
-
-
-4. Prerequisites and provisioning the host
-
-4.1 Baseline prerequisites
-
-•  A fresh 64-bit Ubuntu Server 24.04 LTS droplet. The observed instance has 2 GiB RAM and 48 GB disk; for multiple
-    concurrent desktop sessions, plan more RAM.
-•  SSH key access from the administration workstation. Keep a second SSH session open when changing firewall or SSH
-     settings.
-•  A DNS name is not required for the current SSH-tunnel approach. A properly secured direct browser portal is a separate,
-    not-yet-completed change.
-•   Record current firewall policy, addresses and service ports before modifying an existing server.
-
-4.2 Update and install host packages
-
-       apt update
-       apt upgrade -y
-       apt install -y xfce4 xfce4-session xrdp dbus-x11 acl ufw curl ca-certificates openssl
-
-The installation history confirms XFCE, xfce4-session and XRDP were installed. The other packages above support reliable
-XFCE sessions, ACL management and related operations in a repeat build; check package availability for the chosen Ubuntu
-point release.
-
-4.3 Install Docker Engine and Compose plugin
-
-The existing server reports Docker 29.1.3 and Docker Compose 2.40.3. For a new Ubuntu host, use Docker’s official Ubuntu
-APT repository instructions rather than an unreviewed convenience script. The canonical steps are at reference [1]. After
-installation, verify:
-
-       docker --version
-       docker compose version
-       systemctl is-active docker
-       docker run --rm hello-world
-
-  Reproducibility note: Docker package versions and the postgres:16-alpine tag can move over time. For strict rebuild
-  equivalence, record package versions and container image digests after a tested deployment; version tags alone are not
- immutable.
-
-
-5. Creating the desktop user and XFCE session
-
-5.1 Create or verify the account
-
-     # Only run adduser if the account does not already exist
-        id xmldesktop || adduser xmldesktop
-      usermod -aG sudo xmldesktop
-        id xmldesktop
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 5</pre>
-      
-    </section>
-    <section class="source-page" id="page-6">
-      <div class="page-label">RUNBOOK PAGE 6 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-The account observed in the current deployment is xmldesktop, UID 1004. Its verified group list included 27(sudo) and
-100(users). Do not add xmldesktop to the root group; sudo is the correct Ubuntu mechanism for administrative operations.
-
-5.2 Configure the desktop session
-
-       runuser -u xmldesktop -- sh -c &#x27;printf &quot;%s\n&quot; xfce4-session &gt; /home/xmldesktop/.xsession&#x27;
-      chown xmldesktop:xmldesktop /home/xmldesktop/.xsession
-      chmod 600 /home/xmldesktop/.xsession
-        cat /home/xmldesktop/.xsession
-
-Expected .xsession contents: a single line, xfce4-session. If a newly added sudo group does not show up inside an existing
-desktop terminal, log out of the Linux session completely and reconnect so the session receives updated group
-membership.
-
-5.3 Verify sudo
-
-      sudo whoami
-
-Run that from a refreshed xmldesktop session; enter the Linux password for xmldesktop. Expected output is root. If it still
-reports “not in the sudoers file”, verify `id xmldesktop`, log out completely and reconnect. The transcript confirms the group
-membership was eventually correct.
-
-6. Docker network, XRDP binding and firewall
-
-6.1 Create the Docker bridge network
-
-     # Inspect first; do not create a duplicate network if desktop-net already exists
-       docker network inspect desktop-net
-
-     # For a fresh deployment only, if the network does not exist:
-       docker network create --driver bridge --subnet 172.28.0.0/24 --gateway 172.28.0.1 desktop-net
-
-The current network is named desktop-net and uses subnet 172.28.0.0/24 with gateway 172.28.0.1. Docker assigns a bridge-
-interface name such as br-&lt;network-id-prefix&gt;; that name is host-specific and must be discovered on each build.
-
-       docker network inspect -f &#x27;Name={{.Name}} Id={{.Id}} {{range .IPAM.Config}}Subnet={{.Subnet}} Gateway={{.Gateway}}{{end}}&#x27; desktop-net
-        ip -br addr
-
-
-6.2 Bind XRDP to the Docker gateway
-
-Edit `/etc/xrdp/xrdp.ini`. In the `[Globals]` section, set the port line to the following value. Back up the file before editing.
-Do not change unrelated sections.
-
-      cp -a /etc/xrdp/xrdp.ini /etc/xrdp/xrdp.ini.bak.$(date +%F-%H%M%S)
-      nano /etc/xrdp/xrdp.ini
-     # Under [Globals]:
-     # port=tcp://172.28.0.1:8933
-       systemctl enable --now xrdp xrdp-sesman
-       systemctl restart xrdp xrdp-sesman
-       systemctl status xrdp xrdp-sesman --no-pager
-        ss -lntp | grep &#x27;:8933&#x27;
-
- Expected listener: XRDP should listen on 172.28.0.1:8933, not 0.0.0.0:3389. A listener on a public interface would
-  violate the intended design.
-
-
-6.3 Restrict the firewall rule
-
-Before changing UFW, inspect its rules and ensure SSH is allowed so the administrator is not locked out. The actual bridge
-interface in the observed deployment was br-cc92fc8c6a46; this may differ on a new host.
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 6</pre>
-      
-    </section>
-    <section class="source-page" id="page-7">
-      <div class="page-label">RUNBOOK PAGE 7 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-      ufw status verbose
-      ufw status numbered
-
-     # Fresh host only: ensure SSH is allowed before enabling UFW
-      ufw allow OpenSSH
-
-     # Replace br-&lt;actual-bridge-name&gt; with the interface discovered above
-      ufw allow in on br-&lt;actual-bridge-name&gt; from 172.28.0.0/24 to 172.28.0.1 port 8933 proto tcp
-      ufw status verbose
-
-The final observed rule allowed traffic from 172.28.0.0/24 to 172.28.0.1:8933 on the Docker bridge. A broad `ufw allow
-8933/tcp` was tried during troubleshooting and then removed; do not recreate that broad rule. Do not run `ufw reset` as a
-troubleshooting shortcut.
-The captured status also showed incoming default deny, outgoing allow, routed default deny, SSH/TCP 22 allowed, and an
-existing TCP 14344 allow rule of unknown purpose. Preserve and investigate existing service-specific rules rather than blindly
-replacing the firewall.
-
-7. PostgreSQL and Guacamole deployment
-
-7.1 Create the deployment directory and secret
-
-      mkdir -p /opt/guacamole
-      cd /opt/guacamole
-      chmod 700 /opt/guacamole
-
-     # Fresh database only: generate a strong URL-safe value for the DB role password
-        printf &quot;DB_PASSWORD=%s\n&quot; &quot;$(openssl rand -hex 32)&quot; &gt; .env
-      chmod 600 .env
-
- Secret handling: Never paste `.env` into support chats or store it in source control. Keep a protected record of the
- database password in an approved password manager. If a password is changed after PostgreSQL has initialized its data
- volume, update the database role as well; changing .env alone does not rotate an existing PostgreSQL role password.
-
-
-7.2 Use the Compose layout
-
-The reference Compose file is reproduced in Appendix A. It reflects the observed names, database and ports. On an existing
-deployment, compare it with `/opt/guacamole/compose.yaml` first; do not replace a working file without backing it up. The
-Compose file references an external `desktop-net` bridge and a persistent `postgres_data` volume.
-
-7.3 Initialize the PostgreSQL schema once
-
-For a new database only, create the SQL schema using the same Guacamole version as the application and apply it once.
-The deployment initially generated this script from version 1.6.0, then the application was downgraded to 1.5.5. For a fresh
-rebuild of the currently pinned version, use the 1.5.5 image as shown here:
-
-      cd /opt/guacamole
-       docker compose up -d postgres
-       docker compose ps
-
-     # Generate schema from the same version as the pinned Guacamole image
-       docker run --rm guacamole/guacamole:1.5.5 \
-        /opt/guacamole/bin/initdb.sh --postgresql &gt; /opt/guacamole/initdb.sql
-
-     # Apply only to a freshly created, empty guac_db schema
-       docker exec -i guac-postgres psql -v ON_ERROR_STOP=1 \
-       -U guac_user -d guac_db &lt; /opt/guacamole/initdb.sql
-
- Never reapply initdb.sql to an already initialized production database. First take a pg_dump backup and check the
-  official migration/upgrade procedure for the exact source and target versions.
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 7</pre>
-      
-    </section>
-    <section class="source-page" id="page-8">
-      <div class="page-label">RUNBOOK PAGE 8 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-7.4 Start and validate the stack
-
-      cd /opt/guacamole
-       docker compose config -q
-       docker compose pull
-       docker compose up -d
-       docker compose ps -a
-       docker compose logs --tail=60 guacamole
-       docker compose logs --tail=40 guacd
-        curl -I --max-time 10 http://127.0.0.1:8080/guacamole/
-
-The expected state is guacamole Up, guacd Up/healthy, and guac-postgres Up/healthy. A 200 or 302 response from the HTTP
-check means the web endpoint is responding; a container start message alone is not enough because Tomcat may still be
-deploying the web application.
-
-8. First login and configuring the RDP connection
-
-8.1 Access the portal over SSH
-
-From Windows PowerShell, use a local port forward. Keep this terminal open while using the browser:
-
-       ssh -N -L 8080:127.0.0.1:8080 root@142.93.197.124
-
-Browse to `http://127.0.0.1:8080/guacamole/`. The host-side Docker mapping is intentionally `127.0.0.1:8080:8080`, not
-`0.0.0.0:8080:8080`. If PowerShell reports “channel open failed: connect failed: Connection refused”, check that the
-Guacamole container is running and port 8080 is listening on the server loopback.
-
-8.2 Secure the Guacamole administrator
-
-The default `guacadmin` / `guacadmin` credentials were used during initial login. Confirm the administrator password was
-changed; if it was not, change it immediately. Do not store the password in this runbook.
-
-
-
-
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 8</pre>
-      
-    </section>
-    <section class="source-page" id="page-9">
-      <div class="page-label">RUNBOOK PAGE 9 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-8.3 Create the RDP connection
-
-     Parameter                   Value
-
-      Protocol                  RDP
-
-     Hostname                      172.28.0.1
-
-      Port                        8933
-
-     Username                    xmldesktop
-
-     Password                    The Linux password set for xmldesktop; store it in an approved password manager
-
-      Security mode                Any / Negotiate (as observed in guacd logs)
-
-      Ignore server certificate         Enabled only to accommodate XRDP’s current default self-signed certificate; verify this is the actual
-                                  saved setting
-
-Why certificate handling matters: the original log recorded `Certificate validation failed` and an SSL/TLS failure because
-XRDP presented a self-signed certificate. The TLS handshake subsequently succeeded, and XRDP logged successful
-authentication for xmldesktop. For production, prefer a properly trusted RDP certificate; if using the “ignore certificate”
-option, keep the RDP target private to the host bridge and understand that server identity is not validated.
-
-9. Folder access and administrator permissions
-
-9.1 Verify the folder before changing ACLs
-
-The folder was referred to as `/opt/xmlfiles` during troubleshooting, but the transcript does not contain a final `ls -ld`
-result. Verify the real path before applying permissions:
-
-         ls -ld /opt/xmlfiles
-      namei -l /opt/xmlfiles
-        getfacl /opt/xmlfiles
-
-
-9.2 Grant xmldesktop file access without changing ownership
-
-Root already has administrative control; assigning ACLs to root is usually unnecessary. To grant xmldesktop read/write
-access to files, traversal and modification in directories, and access to future items, run the following only after confirming
-the path and business ownership. This keeps existing owners intact and uses capital `X` to add execute only to directories
-and to files that are already executable.
-
-       apt install -y acl
-        setfacl -R -m u:xmldesktop:rwX /opt/xmlfiles
-        find /opt/xmlfiles -type d -exec setfacl -m d:u:xmldesktop:rwx {} +
-        getfacl /opt/xmlfiles
-
-If policy specifically requires an explicit ACL entry for root too, use `setfacl -R -m u:root:rwx,u:xmldesktop:rwX /opt/xmlfiles`
-and add default root ACLs on directories. Root normally retains access regardless. Do not use recursive `chown` unless you
-intend to change ownership of the folder and all descendants.
-
-9.3 Sudo is different from file access
-
-The user `xmldesktop` was added to the `sudo` group. This grants the user administrative command access after a new
-login session, but it is separate from ACLs that control access to `/opt/xmlfiles`. The verified group output included
-`27(sudo)`. Test with `sudo whoami`, which should print `root`.
-
-10. Operational validation checklist
-
-Run this checklist after a fresh build, a version change, a firewall modification, or any unexplained disconnect. Mark the
-checklist in the ticket/change record; these checks are not all proven by the current transcript.
-
-                                         Internal technical documentation • Prepared 25 Oct 2026 | Page 9</pre>
-      
-    </section>
-    <section class="source-page" id="page-10">
-      <div class="page-label">RUNBOOK PAGE 10 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-•      [ ] `systemctl is-active xrdp xrdp-sesman docker` reports active.
-•      [ ] `ss -lntp | grep 8933` shows XRDP listening on 172.28.0.1:8933 only.
-•      [ ] UFW allows TCP 8933 only from 172.28.0.0/24 on the actual Docker bridge interface.
-•      [ ] `docker compose config -q` exits successfully.
-•      [ ] `docker compose ps -a` shows Guacamole, guacd and PostgreSQL running/healthy.
-•      [ ] `curl -I http://127.0.0.1:8080/guacamole/` returns an HTTP response.
-•      [ ] The SSH tunnel opens the Guacamole login page from Windows.
-•      [ ] A Guacamole RDP connection opens an XFCE session using xmldesktop.
-•      [ ] The desktop remains connected during a 10–15 minute idle test and ordinary mouse/keyboard use.
-•      [ ] `sudo whoami` from the refreshed desktop session prints root.
-•      [ ] `/opt/xmlfiles` exists at the confirmed path and xmldesktop can list, create, edit and delete a test file as intended.
-•      [ ] The Guacamole admin default password has been changed and is not stored in this runbook.
-•      [ ] A PostgreSQL backup is created, non-empty, and stored securely.
-•      [ ] No unintended public listening ports exist for 8080, 8933, 4822, or 5432.
-
-11. Hitches encountered and resolutions
-
-     Symptom / evidence              Cause or interpretation                     Resolution / lesson
-
-     Guacamole initially could not connect  XRDP was bound to a Docker bridge address    Create/inspect desktop-net, bind XRDP to
-       to XRDP; early messages included      and traffic was initially blocked by host          172.28.0.1:8933 and add only the bridge-scoped UFW
-      refused/unreachable connection.        firewall rules.                                 allow rule. Do not leave a broad 8933 public allow
-                                                                                                          rule.
-
-     guacd logged `Certificate validation    XRDP’s default certificate at                Use the connection’s certificate handling option only
-       failed` and TLS connection failure.      `/etc/xrdp/cert.pem` was self-signed and not   for this private bridge during setup; long-term
-                                              trusted by Guacamole.                       hardening should use a trusted certificate or a
-                                                                           documented trust strategy.
-
-      Desktop login succeeded but the RDP   The observed message exactly matches an     Both Guacamole components were rolled back to
-      browser session closed; guacd logged   Apache Guacamole issue reported for            1.5.5. This stabilised access at the time of the last
-     `GUAC_ASSERT in                     guacd/client 1.6.0 using RDP in Docker [3].      successful screen, but a sustained stability test and a
-      guac_display_remove_layer() failed at   Logs showed XRDP login success before the    supported fixed release still need to be verified.
-       display-layer-list.c:327`.              channel closed.
-
-       After version rollback, browser         The web container was Restarting and there     Inspect docker compose status/logs before
-     showed ERR_CONNECTION_RESET    was no host listener on port 8080.             debugging SSH; fix the actual container startup error.
-     and SSH forwarding showed
-      connection refused.
-
-     Guacamole 1.5.5 logged `FATAL:       The old Compose file still used                 For 1.5.5, change the key to POSTGRESQL_USER and
-      Missing required environment        POSTGRESQL_USERNAME. The official          recreate the web container. For another version, use
-       variables`; POSTGRESQL_USER was    Docker environment variable name differs       that version’s official manual, not a setting copied
-      missing.                             across these Guacamole versions: 1.5.5 uses    blindly from a different release.
-                                   POSTGRESQL_USER [1], while 1.6.0 docs use
-                                  POSTGRESQL_USERNAME [2].
-
-      `xmldesktop` got “not in the sudoers   The user had not yet received sudo group      Add with `usermod -aG sudo xmldesktop`, then start
-        file.”                            membership in the current session.           a new session and verify `sudo whoami`.
-
-      Folder /opt/xmlfiles access            Changing ownership is not required to grant      Verify exact path and current ownership; prefer ACLs
-      requested; ownership approach was    access and may affect services that rely on     when preserving ownership. Confirm with getfacl and
-      questioned.                              existing ownership. Final ACL output was not    a harmless test file.
-                                       shown.
-
-     An SSH command with local           The tunnel can reach SSH, but server-side      Check container status and `ss -lntp`, not the
-      forwarding displayed repeated          destination 127.0.0.1:8080 is not accepting    Windows browser alone.
-      `channel ... open failed: Connection    connections when the app container is down.
-      refused`.
-
-
-
-
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 10</pre>
-      
-    </section>
-    <section class="source-page" id="page-11">
-      <div class="page-label">RUNBOOK PAGE 11 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-12. Backup, restore and rollback procedures
-
-12.1 Before any upgrade or downgrade
-
-      cd /opt/guacamole
-      umask 077
-      mkdir -p /root/guac-backups
-      STAMP=$(date +%F_%H%M%S)
-       docker exec guac-postgres pg_dump -U guac_user -d guac_db &gt; &quot;/root/guac-backups/guac_db_${STAMP}.sql&quot;
-        test -s &quot;/root/guac-backups/guac_db_${STAMP}.sql&quot; &amp;&amp; echo &quot;DB backup created&quot;
-      cp -a compose.yaml &quot;/root/guac-backups/compose_${STAMP}.yaml&quot;
-      cp -a .env &quot;/root/guac-backups/env_${STAMP}&quot;
-      chmod 600 &quot;/root/guac-backups/&quot;*
-
-The backup file contains authentication and connection metadata; the `.env` backup contains a secret. Keep them root-
-readable only and move a copy to encrypted off-server storage. Do not include a database dump or .env file in a public
-repository.
-
-12.2 Application-version rollback
-
-•   Step 1: Take the database and configuration backups above before changing tags.
-•   Step 2: Back up the current Compose file separately and edit the image tags for both `guacamole` and `guacd`
-    together. Do not mix versions unless explicitly supported.
-•   Step 3: Adjust PostgreSQL environment variable names to the exact version you are deploying; see Appendix C.
-•   Step 4: Pull and recreate only the relevant containers, then inspect logs and test an RDP session. Keep the PostgreSQL
-    volume and database intact unless there is a documented migration plan.
-
-       docker compose config -q
-       docker compose pull
-       docker compose up -d --force-recreate guacd guacamole
-       docker compose ps -a
-       docker compose logs --tail=80 guacamole
-       docker compose logs --tail=80 guacd
-        curl -I --max-time 10 http://127.0.0.1:8080/guacamole/
-
- Version rollback caveat: A database schema may be changed by a later application version. A container image rollback
-  is not a guaranteed database rollback. Read the exact release/upgrade notes and restore a compatible database backup
-   if needed. Do not restore a dump over the live DB without stopping writes and verifying the target database.
-
-
-12.3 Restore a PostgreSQL backup (destructive to current DB contents)
-
-Only use this during a planned recovery window, after confirming the correct backup and target database. The following
-pattern shows how to restore into a deliberately recreated database; it is not a one-click command for the live production
-DB.
-
-     # 1. Stop the web app so it cannot write while restoring
-       docker compose stop guacamole
-
-     # 2. Create a safety dump of the current DB before restoration
-       docker exec guac-postgres pg_dump -U guac_user -d guac_db &gt; /root/guac-backups/pre_restore_$(date +%F_%H%M%S).sql
-
-     # 3. Select an approved recovery plan: restore into a new temporary database first,
-     #  validate it, then perform the planned cutover. Do not pipe an old dump into
-     #  the live database without clearing/isolating the current schema as planned.
-
-     # 4. Start application and validate after recovery
-       docker compose up -d guacamole
-       docker compose ps -a
-
-The commands intentionally stop short of dropping/recreating the live database because the existing schema and backup’s
-exact origin must be established before a destructive restore. For true repeatable disaster recovery, rehearse restoring to a
-separate temporary PostgreSQL database and document the tested cutover procedure.
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 11</pre>
-      
-    </section>
-    <section class="source-page" id="page-12">
-      <div class="page-label">RUNBOOK PAGE 12 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-12.4 Safe container restart vs. destructive cleanup
-
-     # Safe first-line actions
-       docker compose restart guacamole
-       docker compose logs --tail=80 guacamole
-
-     # A normal down/up retains named volumes (do not add -v)
-       docker compose down
-       docker compose up -d
-
-     # NEVER run this casually; it deletes named volumes, including postgres_data:
-     # docker compose down -v
-
-13. Security hardening and outstanding work
-
-       Priority         Action                                                                  Status in this runbook
-
-       Critical         Confirm Guacamole `guacadmin` default password was changed. If not,          Verify; initial default login was used.
-                    change it immediately.
-
-       Critical        Keep 8080 bound to 127.0.0.1 and do not expose 8933, 4822 or 5432 publicly.     Current topology is loopback/private
-                                                                                                           bridge.
-
-      High          Keep SSH key authentication and review any root SSH login policy. Restrict SSH   Key-based root SSH worked; hardening
-                     source IP where practical; validate a second admin path before changing sshd.    pending.
-
-      High           Review the existing UFW TCP 14344 allow rule and determine which service      Purpose unknown in captured output.
-                        requires it.
-
-      High              Verify /opt/xmlfiles exists and apply/test ACLs; avoid recursive chown if        ACL execution/verification not confirmed.
-                     ownership must be preserved.
-
-      High            Test at least 10–15 minutes of desktop use and reconnection. Keep guacamole    Portal and desktop connected; sustained
-                   and guacd version tags matched.                                                        stability still to verify.
-
-      High           Review current Apache Guacamole advisories and select a maintained release    1.5.5 is the observed rollback version, not a
-                       with the RDP disconnect issue resolved before treating the deployment as        claim of current supported/fixed release.
-                         production-final.
-
-     Medium        Implement direct public browser access only via a properly configured HTTPS    Not implemented. Current access requires
-                       reverse proxy and a renewal-tested certificate, after testing.                  an SSH tunnel.
-
-     Medium       Use an individual least-privilege Linux desktop account if the desktop does not    xmldesktop currently belongs to sudo
-                           truly require sudo for daily work.                                               group.
-
-     Medium         Test and store encrypted off-server database/config backups; periodically       Backup process documented; restore
-                      rehearse restoration.                                                          rehearsal not evidenced.
-
-     Medium         Pin image digests and recorded package versions when strict repeatability is     Image tags currently include postgres:16-
-                        required.                                                                          alpine, which can move over time.
-
-
-  Public access is not yet part of the completed build: Do not make the portal publicly reachable by changing the
- mapping to 0.0.0.0:8080 or by opening TCP 8080. Plan a separate change with TLS, authentication, access controls and
- renewal monitoring; test it before removing the SSH tunnel method.
-
-
-
-
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 12</pre>
-      
-    </section>
-    <section class="source-page" id="page-13">
-      <div class="page-label">RUNBOOK PAGE 13 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-Appendix A. Reference Compose configuration
-
-The following is a reconstructed, minimal reference using the verified service names, image tags, port mapping, network and
-database settings. Compare it with the live `/opt/guacamole/compose.yaml` before using. The transcript did not expose
-every original health-check or environment detail, so preserve any additional working options from the live file.
-
-        services:
-        postgres:
-         image: postgres:16-alpine
-         container_name: guac-postgres
-          restart: unless-stopped
-         environment:
-        POSTGRES_DB: guac_db
-        POSTGRES_USER: guac_user
-        POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
-         volumes:
-              - postgres_data:/var/lib/postgresql/data
-         healthcheck:
-            test: [&quot;CMD-SHELL&quot;, &quot;pg_isready -U guac_user -d guac_db&quot;]
-           interval: 5s
-          timeout: 5s
-            retries: 10
-         networks:
-              - desktop-net
-
-        guacd:
-         image: guacamole/guacd:1.5.5
-         container_name: guacd
-          restart: unless-stopped
-         networks:
-              - desktop-net
-
-        guacamole:
-         image: guacamole/guacamole:1.5.5
-         container_name: guacamole
-          restart: unless-stopped
-         depends_on:
-          postgres:
-            condition: service_healthy
-          guacd:
-            condition: service_started
-         environment:
-        GUACD_HOSTNAME: guacd
-        POSTGRESQL_ENABLED: &quot;true&quot;
-        POSTGRESQL_HOSTNAME: postgres
-        POSTGRESQL_DATABASE: guac_db
-        POSTGRESQL_USER: guac_user
-        POSTGRESQL_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
-          ports:
-              - &quot;127.0.0.1:8080:8080&quot;
-         networks:
-              - desktop-net
-
-       volumes:
-        postgres_data:
-
-       networks:
-        desktop-net:
-          external: true
-
-Matching `.env` file format (the password value is illustrative; generate a real secret and never copy a literal password from
-documentation):
-
-      DB_PASSWORD=REPLACE_WITH_A_RANDOM_HEX_SECRET
-
-After writing the files:
-
-      chmod 600 /opt/guacamole/.env
-      cd /opt/guacamole
-       docker compose config -q
-       docker compose up -d
-       docker compose ps -a
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 13</pre>
-      
-    </section>
-    <section class="source-page" id="page-14">
-      <div class="page-label">RUNBOOK PAGE 14 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-
-  Important: For a new installation, initialize the database schema before expecting Guacamole authentication to work.
-  For an existing installation, do not regenerate or reapply the initialization SQL as a routine repair step.
-
-
-Appendix B. Quick troubleshooting commands
-
-     Question                         Command
-
-      Are containers running?                    `cd /opt/guacamole &amp;&amp; docker compose ps -a`
-
-    Why is Guacamole restarting?                `docker compose logs --tail=100 guacamole`
-
-     What happened to an RDP session?           `docker logs --since 10m guacd 2&gt;&amp;1 | tail -n 100`
-
-       Is the web port listening locally?              `ss -lntp | grep :8080`
-
-     Does the web endpoint respond?                `curl -I --max-time 10 http://127.0.0.1:8080/guacamole/`
-
-       Is XRDP bound to the expected gateway?       `ss -lntp | grep :8933`
-
-     Did XRDP authenticate the user?                  `tail -n 80 /var/log/xrdp.log`
-
-     Did sesman create/reconnect the session?       `tail -n 80 /var/log/xrdp-sesman.log`
-
-     What are UFW rules?                       `ufw status verbose &amp;&amp; ufw status numbered`
-
-     What are the desktop user groups?              `id xmldesktop`
-
-    Who owns the target folder and ACLs?           `ls -ld /opt/xmlfiles &amp;&amp; getfacl /opt/xmlfiles`
-
-       Is PostgreSQL healthy?                      `docker compose ps postgres &amp;&amp; docker logs --tail=50 guac-postgres`
-
-
-Appendix C. Version-specific PostgreSQL environment variables
-
-This was a real cause of the failed downgrade. Use the official documentation for the exact version being run; do not treat
-these names as interchangeable.
-
-     Guacamole image       Database username environment
-                                                                   Context
-      version                   variable documented for Docker
-
-      1.5.5                 POSTGRESQL_USER                         This is the final observed application version in this
-                                                                      deployment. The container was Restarting until the
-                                                         Compose key was changed from POSTGRESQL_USERNAME
-                                                                              to POSTGRESQL_USER.
-
-      1.6.0                POSTGRESQL_USERNAME                   This is the name used in the 1.6.0 PostgreSQL authentication
-                                                                   Docker documentation; 1.6.0 was rolled back after the
-                                                                     observed RDP session assertion/disconnects.
-
-Do not copy the complete Compose file from one version’s manual to another without checking all image-version-specific
-configuration and upgrade requirements.
-
-References
-
-[1] Apache Guacamole Manual v1.5.5, “Installing Guacamole with Docker” — includes the 1.5.5 Docker PostgreSQL variable
-name POSTGRESQL_USER and DB initialization process. https://guacamole.apache.org/doc/1.5.5/gug/guacamole-
-docker.html
-[2] Apache Guacamole Manual v1.6.0, “Database setup for PostgreSQL” — documents POSTGRESQL_USERNAME for
-Docker-based deployments using 1.6.0. https://guacamole.apache.org/doc/gug/postgresql-auth.html
-[3] Apache Software Foundation JIRA, GUACAMOLE-2321, “guacd 1.6.0: GUAC_ASSERT failure in
-guac_display_remove_layer() ... terminates active RDP connections” — reported with guacd/client 1.6.0, RDP and Docker.
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 14</pre>
-      
-    </section>
-    <section class="source-page" id="page-15">
-      <div class="page-label">RUNBOOK PAGE 15 OF 15</div>
-      <pre>OPERATIONS RUNBOOK  | GUACAMOLE + XRDP + XFCE
-The log signature in the incident matched the reported symptom; this reference does not establish a fixed release.
-https://issues.apache.org/jira/browse/GUACAMOLE-2321
-[4] Docker Docs, “Install Docker Engine on Ubuntu” — recommended repository-based Docker installation and firewall
-caveats. https://docs.docker.com/engine/install/ubuntu/
-External references were consulted on 25 October 2026. Always consult the exact version’s manual and release/security
-notes before upgrading, downgrading or deploying this pattern to a production system.
-
-
-
-
-
-                                        Internal technical documentation • Prepared 25 Oct 2026 | Page 15</pre>
-      
-    </section>
-</main>
-<footer>© 2026 Ambrose Onsare · HTML conversion of the supplied Guacamole + XRDP + XFCE runbook.</footer>
-</body></html>
+<p>One important lesson came from the version rollback. The 1.6.0 documentation used a different PostgreSQL environment variable name from 1.5.5. Those settings are not interchangeable. I had to align the web and proxy image versions and use the configuration expected by the actual image. I also kept the PostgreSQL data volume intact; changing application tags is not the same thing as safely rolling back a database schema.</p>
+
+<h2>How I checked the result</h2>
+<p>I considered the deployment successful when the browser could reach Guacamole through the SSH tunnel, Guacamole could authenticate against PostgreSQL, and the RDP connection opened an XFCE session for <code>xmldesktop</code>. The last observed state in the runbook recorded Guacamole 1.5.5 and <code>guacd</code> 1.5.5 running, PostgreSQL healthy, the portal bound to <code>127.0.0.1:8080</code>, and a successful desktop connection after troubleshooting.</p>
+<div class="panel">
+<strong>Last observed deployment state</strong>
+<ul>
+<li>Ubuntu Server 24.04.5 LTS on a 2 GiB / 48 GB DigitalOcean droplet.</li>
+<li>Docker 29.1.3 and Docker Compose 2.40.3 were observed during setup.</li>
+<li>Guacamole 1.5.5 and guacd 1.5.5 were running; PostgreSQL was healthy.</li>
+<li>Guacamole web access was bound to host loopback at <code>127.0.0.1:8080</code>.</li>
+<li>XRDP was listening on <code>172.28.0.1:8933</code> for the private Docker bridge path.</li>
+<li>The <code>xmldesktop</code> XFCE session had connected successfully.</li>
+</ul>
+</div>
+<p>I would still run a sustained 10–15 minute session and reconnect test before calling the deployment production-ready. I would also verify the admin password rotation, confirm the exact shared-folder path and ACLs, review the unexplained UFW rule for TCP 14344, and test an encrypted off-server database backup and restore.</p>
+
+<h2>What I took away from it</h2>
+<p>This project reminded me that a remote desktop is not just an application you install. It is a chain of services, network boundaries, authentication, certificates, Linux sessions and persistent data. When one link fails, the useful skill is knowing where to look: container logs for application startup, XRDP logs for desktop authentication, socket listeners for binding issues, and firewall rules for reachability.</p>
+<p>The outcome was a working browser-based Linux desktop with a deliberately private access path. Just as importantly, I documented the rough edges and the items still needing verification instead of presenting a successful login as proof that every production control was finished.</p>
+<div class="callout warning"><strong>Production boundary:</strong> Direct public HTTPS access was not implemented in the documented deployment. Do not expose port 8080 or change the binding to <code>0.0.0.0</code> as a shortcut. A public portal would need a separate, tested HTTPS reverse-proxy design, certificate renewal, authentication and access controls.</div>
+<div class="foot">Project narrative based on the deployment and operations runbook prepared 25 October 2026. Sensitive server addressing and credentials are intentionally not published.</div>
+</main></body></html>
