@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Engineering case study: deploying a private browser-based Ubuntu XFCE desktop with Apache Guacamole, XRDP, PostgreSQL and Docker Compose on DigitalOcean.">
+  <title>Browser-Based Linux Desktop | Ambrose Onsare</title>
+  <style>
+    :root{--bg:#080d18;--panel:#101a2b;--panel2:#0c1422;--line:#24334b;--text:#e8eef8;--muted:#9aabc2;--accent:#55d6be;--blue:#7db5ff;--warn:#f4c56a;--radius:18px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 80% 0%,#14253b 0,transparent 34%),var(--bg);color:var(--text);font:16px/1.7 Inter,Segoe UI,Arial,sans-serif}
+    a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}.wrap{width:min(1120px,92%);margin:auto}
+    header{border-bottom:1px solid var(--line);background:#080d18e8;position:sticky;top:0;z-index:10;backdrop-filter:blur(14px)}
+    nav{height:68px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{font-weight:800;letter-spacing:.2px;color:var(--text)}.navlinks{display:flex;gap:22px;flex-wrap:wrap;font-size:.92rem;color:var(--muted)}
+    .hero{padding:82px 0 54px}.eyebrow{color:var(--accent);text-transform:uppercase;letter-spacing:2px;font-size:.78rem;font-weight:800}
+    h1{font-size:clamp(2.35rem,5vw,4.5rem);line-height:1.08;letter-spacing:-1.8px;max-width:900px;margin:16px 0}
+    .lead{font-size:1.16rem;color:#bdcbe0;max-width:850px}.chips{display:flex;gap:9px;flex-wrap:wrap;margin:26px 0}.chip{border:1px solid #31435d;background:#101c2d;padding:6px 12px;border-radius:999px;color:#c8d8ec;font-size:.82rem}
+    .meta{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:38px}.meta div,.panel,.card{background:linear-gradient(145deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:var(--radius)}
+    .meta div{padding:16px}.meta small{display:block;color:var(--muted);font-size:.78rem}.meta strong{display:block;margin-top:4px;font-size:.96rem}
+    main{padding-bottom:70px}.section{padding:30px 0}.section h2{font-size:1.7rem;letter-spacing:-.4px;margin:0 0 14px}.section h3{font-size:1.12rem;margin:24px 0 8px}.section p{color:#c1cde0}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{padding:24px}.panel p:last-child{margin-bottom:0}.muted{color:var(--muted)!important}
+    .callout{border-left:3px solid var(--accent);background:#10242b;padding:16px 18px;border-radius:0 12px 12px 0;color:#d7e9e7;margin:20px 0}
+    .warning{border-left-color:var(--warn);background:#2a2417;color:#f1e3c3}
+    ul{padding-left:21px;color:#c1cde0}li{margin:7px 0}.diagram{padding:18px;background:#0b1422;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.diagram svg{width:100%;height:auto;display:block}
+    .steps{counter-reset:step;display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.step{padding:18px 18px 18px 58px;position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:14px}.step:before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:18px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#153d3a;color:var(--accent);font-weight:800}
+    .step strong{display:block;color:var(--text);margin-bottom:4px}.step span{color:var(--muted);font-size:.93rem}
+    .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:14px}table{width:100%;border-collapse:collapse;min-width:620px;background:#0d1726}th,td{text-align:left;padding:13px 15px;border-bottom:1px solid var(--line);vertical-align:top}th{background:#14243a;color:#dce8f7;font-size:.88rem}td{color:#bdcbe0;font-size:.92rem}tr:last-child td{border-bottom:0}
+    pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#070c14;border:1px solid #25344b;border-radius:12px;padding:16px;color:#b8e7dc;font: .87rem/1.6 Consolas,Monaco,monospace}
+    .status{display:inline-block;padding:3px 9px;border-radius:999px;background:#173b32;color:#9ce5cb;font-size:.75rem;font-weight:700}.pending{background:#3b3019;color:#f4d58b}
+    .footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:.9rem}.links{display:flex;gap:18px;flex-wrap:wrap;margin-top:18px}
+    @media(max-width:760px){.meta{grid-template-columns:repeat(2,1fr)}.grid2,.steps{grid-template-columns:1fr}.hero{padding-top:58px}.navlinks{gap:12px}.brand{font-size:.9rem}}
+    @media(max-width:460px){.meta{grid-template-columns:1fr 1fr}.navlinks{font-size:.8rem}}
+  </style>
+</head>
+<body>
+<header><nav class="wrap">
+  <a class="brand" href="../index.html">AMBROSE ONSARE</a>
+  <div class="navlinks"><a href="../index.html">Home</a><a href="../projects.html">Projects</a><a href="../blog/index.html">Blog</a><a href="../index.html#about">About</a><a href="../index.html#contact">Contact</a></div>
+</nav></header>
+
+<section class="hero wrap">
+  <div class="eyebrow">Infrastructure Engineering · DigitalOcean · Linux</div>
+  <h1>Deploying a Private Browser-Based Linux Desktop</h1>
+  <p class="lead">A practical implementation of a remotely accessible Ubuntu XFCE desktop using Apache Guacamole, XRDP, PostgreSQL and Docker Compose — with the browser portal kept private behind an SSH tunnel.</p>
+  <div class="chips">
+    <span class="chip">Ubuntu Server 24.04.5 LTS</span><span class="chip">Apache Guacamole 1.5.5</span><span class="chip">XRDP</span><span class="chip">XFCE</span><span class="chip">Docker Compose</span><span class="chip">PostgreSQL 16</span>
+  </div>
+  <div class="meta">
+    <div><small>Platform</small><strong>DigitalOcean Droplet</strong></div>
+    <div><small>Host resources</small><strong>2 GiB RAM · 48 GB disk</strong></div>
+    <div><small>Access method</small><strong>Browser over SSH tunnel</strong></div>
+    <div><small>Documented state</small><strong>Desktop connection successful</strong></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <section class="section">
+    <h2>Project overview</h2>
+    <p>The objective was to provide a lightweight Linux desktop that could be accessed through a web browser, without exposing the remote desktop protocol or the Guacamole application directly to the public internet. The implementation separates the browser-facing gateway, RDP proxy, desktop service and authentication database.</p>
+    <div class="callout"><strong>Design principle:</strong> SSH is the external access path. Guacamole is bound to the Ubuntu host's loopback interface, while XRDP, guacd and PostgreSQL remain on private host or Docker networking paths.</div>
+    <div class="grid2">
+      <div class="panel"><h3>What was implemented</h3><ul>
+        <li>Ubuntu host prepared with XFCE and XRDP.</li>
+        <li>Dedicated Docker bridge network for the Guacamole stack.</li>
+        <li>Guacamole, guacd and PostgreSQL deployed with Docker Compose.</li>
+        <li>Guacamole web endpoint published only on <code>127.0.0.1:8080</code>.</li>
+        <li>SSH local port forwarding from the Windows workstation.</li>
+        <li>RDP connection configured to reach XRDP through the Docker bridge gateway.</li>
+      </ul></div>
+      <div class="panel"><h3>What the runbook leaves for verification</h3><ul>
+        <li>Confirmation that the default Guacamole administrator password was rotated.</li>
+        <li>Final path and ACL validation for the shared files directory.</li>
+        <li>Longer-duration desktop and reconnect stability testing.</li>
+        <li>Encrypted off-server backup and restore rehearsal.</li>
+        <li>Any future public HTTPS access design.</li>
+      </ul></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Architecture and traffic flow</h2>
+    <p>The topology below follows the deployed design documented in the operations runbook. The only intended public-facing management path is SSH; the browser accesses the Guacamole service through a local forwarded port.</p>
+    <div class="diagram">
+      <svg viewBox="0 0 1000 510" role="img" aria-label="Architecture diagram showing browser through SSH tunnel to Guacamole, guacd, XRDP and XFCE, with PostgreSQL as the authentication database">
+        <defs><marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#55d6be"/></marker></defs>
+        <rect x="18" y="18" width="964" height="474" rx="18" fill="#0d1726" stroke="#31435d" stroke-width="2"/>
+        <text x="42" y="52" fill="#9aabc2" font-size="16" font-weight="700">DIGITALOCEAN UBUNTU HOST · PRIVATE SERVICE NETWORK</text>
+        <rect x="42" y="95" width="205" height="105" rx="12" fill="#142b45" stroke="#7db5ff"/>
+        <text x="144" y="128" fill="#e8eef8" font-size="18" text-anchor="middle" font-weight="700">Windows workstation</text>
+        <text x="144" y="154" fill="#b7c8dc" font-size="14" text-anchor="middle">Web browser</text>
+        <text x="144" y="177" fill="#b7c8dc" font-size="13" text-anchor="middle">localhost:8080</text>
+        <rect x="330" y="95" width="250" height="105" rx="12" fill="#173b32" stroke="#55d6be"/>
+        <text x="455" y="128" fill="#e8eef8" font-size="18" text-anchor="middle" font-weight="700">SSH local tunnel</text>
+        <text x="455" y="154" fill="#b7c8dc" font-size="14" text-anchor="middle">TCP 22 over public network</text>
+        <text x="455" y="177" fill="#b7c8dc" font-size="13" text-anchor="middle">Forwards to host loopback</text>
+        <path d="M247 148 H325" stroke="#55d6be" stroke-width="3" marker-end="url(#arr)"/>
+        <rect x="670" y="80" width="270" height="140" rx="12" fill="#1c2d43" stroke="#7db5ff"/>
+        <text x="805" y="112" fill="#e8eef8" font-size="18" text-anchor="middle" font-weight="700">Guacamole web</text>
+        <text x="805" y="139" fill="#b7c8dc" font-size="14" text-anchor="middle">127.0.0.1:8080</text>
+        <text x="805" y="163" fill="#b7c8dc" font-size="14" text-anchor="middle">Browser gateway</text>
+        <text x="805" y="190" fill="#9ce5cb" font-size="13" text-anchor="middle">Docker container</text>
+        <path d="M580 148 H665" stroke="#55d6be" stroke-width="3" marker-end="url(#arr)"/>
+        <rect x="350" y="290" width="220" height="90" rx="12" fill="#172b3c" stroke="#7db5ff"/>
+        <text x="460" y="325" fill="#e8eef8" font-size="18" text-anchor="middle" font-weight="700">guacd</text>
+        <text x="460" y="351" fill="#b7c8dc" font-size="14" text-anchor="middle">RDP proxy · TCP 4822</text>
+        <path d="M805 220 V250 H460 V285" stroke="#55d6be" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+        <rect x="690" y="290" width="250" height="90" rx="12" fill="#3a2e1b" stroke="#f4c56a"/>
+        <text x="815" y="325" fill="#f6e8c9" font-size="18" text-anchor="middle" font-weight="700">XRDP on Ubuntu host</text>
+        <text x="815" y="351" fill="#e5d5b5" font-size="14" text-anchor="middle">Private bridge gateway · 8933</text>
+        <path d="M570 335 H685" stroke="#55d6be" stroke-width="3" marker-end="url(#arr)"/>
+        <rect x="690" y="405" width="250" height="65" rx="12" fill="#173b32" stroke="#55d6be"/>
+        <text x="815" y="432" fill="#e8eef8" font-size="17" text-anchor="middle" font-weight="700">XFCE desktop session</text>
+        <text x="815" y="453" fill="#b7c8dc" font-size="13" text-anchor="middle">Linux desktop user session</text>
+        <path d="M815 380 V400" stroke="#55d6be" stroke-width="3" marker-end="url(#arr)"/>
+        <rect x="350" y="405" width="220" height="65" rx="12" fill="#253047" stroke="#7db5ff"/>
+        <text x="460" y="432" fill="#e8eef8" font-size="17" text-anchor="middle" font-weight="700">PostgreSQL</text>
+        <text x="460" y="453" fill="#b7c8dc" font-size="13" text-anchor="middle">Guacamole auth/config data</text>
+        <path d="M460 380 V400" stroke="#7db5ff" stroke-width="2" stroke-dasharray="5 5"/>
+        <text x="42" y="455" fill="#9aabc2" font-size="13">Private Docker bridge connects Guacamole, guacd and PostgreSQL.</text>
+      </svg>
+    </div>
+    <p class="muted">The Docker bridge subnet and host gateway were configured specifically so guacd could reach XRDP without publishing RDP on a public interface. The exact public server address is intentionally omitted from this portfolio page.</p>
+  </section>
+
+  <section class="section">
+    <h2>Implementation</h2>
+    <div class="steps">
+      <div class="step"><strong>Prepare the Ubuntu host</strong><span>Updated Ubuntu Server 24.04.5 LTS and installed XFCE, the XFCE session components, XRDP and supporting packages.</span></div>
+      <div class="step"><strong>Configure the desktop session</strong><span>Created a dedicated Linux desktop account and configured its <code>.xsession</code> to launch <code>xfce4-session</code>.</span></div>
+      <div class="step"><strong>Create the Docker network</strong><span>Used a dedicated bridge network named <code>desktop-net</code>, with a private subnet and gateway for container-to-host communication.</span></div>
+      <div class="step"><strong>Bind XRDP privately</strong><span>Configured XRDP to listen on the Docker bridge gateway at TCP 8933 rather than a public interface or the default public RDP port.</span></div>
+      <div class="step"><strong>Deploy the Guacamole stack</strong><span>Used Docker Compose for Guacamole, guacd and PostgreSQL, with persistent database storage and private container networking.</span></div>
+      <div class="step"><strong>Connect securely from Windows</strong><span>Created an SSH local port forward and opened the Guacamole portal in a local browser session.</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <h2>Key configuration</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Component</th><th>Documented configuration</th><th>Purpose</th></tr></thead>
+      <tbody>
+        <tr><td>Host OS</td><td>Ubuntu Server 24.04.5 LTS</td><td>DigitalOcean Linux host</td></tr>
+        <tr><td>Desktop</td><td>XFCE · <code>xfce4-session</code></td><td>Lightweight graphical desktop</td></tr>
+        <tr><td>Remote desktop service</td><td>XRDP · private bridge gateway · TCP 8933</td><td>RDP endpoint for guacd</td></tr>
+        <tr><td>Web gateway</td><td>Guacamole 1.5.5 · host loopback TCP 8080</td><td>Browser-based access</td></tr>
+        <tr><td>RDP proxy</td><td>guacd 1.5.5 · TCP 4822 internally</td><td>Bridges Guacamole to XRDP</td></tr>
+        <tr><td>Database</td><td>PostgreSQL 16 Alpine</td><td>Guacamole authentication and connection data</td></tr>
+        <tr><td>Container orchestration</td><td>Docker 29.1.3 · Compose 2.40.3 (observed)</td><td>Runs the Guacamole services</td></tr>
+        <tr><td>External access</td><td>SSH local port forwarding</td><td>Keeps the web portal private</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Example: browser access through SSH forwarding</h3>
+    <p>The following is the documented access pattern. The server address is represented by a placeholder rather than publishing the host's public IP.</p>
+    <pre>ssh -N -L 8080:127.0.0.1:8080 &lt;ssh-user&gt;@&lt;server-public-ip&gt;
+
+# Open in the local browser:
+http://127.0.0.1:8080/guacamole/</pre>
+    <h3>Example: validating the services</h3>
+    <pre>cd /opt/guacamole
+docker compose config -q
+docker compose ps -a
+docker compose logs --tail=60 guacamole
+docker compose logs --tail=40 guacd
+curl -I --max-time 10 http://127.0.0.1:8080/guacamole/
+
+# Check the private XRDP listener
+ss -lntp | grep ':8933'</pre>
+  </section>
+
+  <section class="section">
+    <h2>Challenges and troubleshooting</h2>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Issue encountered</th><th>Investigation and resolution</th></tr></thead>
+      <tbody>
+        <tr><td>Guacamole could not reach XRDP</td><td>XRDP binding and host firewall rules were aligned with the dedicated Docker bridge. The final rule restricted TCP 8933 to traffic from the Docker subnet on the bridge interface.</td></tr>
+        <tr><td>XRDP certificate validation failed</td><td>The default XRDP certificate was self-signed. The connection's certificate handling was adjusted for the private test path; a trusted certificate remains a hardening consideration.</td></tr>
+        <tr><td>RDP session disconnected after login</td><td>The observed Guacamole 1.6.0 / guacd 1.6.0 session failure matched a reported RDP display-layer assertion issue. Both Guacamole components were rolled back together to 1.5.5, after which desktop access succeeded.</td></tr>
+        <tr><td>Guacamole container restarted after downgrade</td><td>The Compose configuration used the wrong PostgreSQL username environment variable for version 1.5.5. It was changed from <code>POSTGRESQL_USERNAME</code> to <code>POSTGRESQL_USER</code>.</td></tr>
+        <tr><td>SSH tunnel reported connection refused</td><td>The SSH connection itself was available, but the forwarded destination was not accepting connections while the Guacamole container was down. Container health and the host listener were checked first.</td></tr>
+        <tr><td>Desktop terminal did not recognize sudo membership</td><td>The desktop account's group membership was refreshed by logging out and starting a new session after adding it to the sudo group.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout warning"><strong>Version lesson:</strong> Guacamole's Docker environment variable names differ between releases. The configuration must match the exact application version. The runbook records 1.5.5 as the final observed version after rollback; it does not claim that this is the latest or permanently fixed release.</div>
+  </section>
+
+  <section class="section">
+    <h2>Security and operational considerations</h2>
+    <div class="grid2">
+      <div class="panel"><h3>Controls applied in the documented design</h3><ul>
+        <li>Guacamole web port bound to host loopback only.</li>
+        <li>XRDP restricted to the Docker bridge gateway and bridge-originating traffic.</li>
+        <li>guacd and PostgreSQL kept on the internal Docker network.</li>
+        <li>SSH key-based administration used for host access.</li>
+        <li>Database credentials stored in a protected environment file, not in source control.</li>
+      </ul></div>
+      <div class="panel"><h3>Hardening still to complete or re-verify</h3><ul>
+        <li>Rotate and verify the Guacamole administrator password.</li>
+        <li>Review SSH root-login policy and restrict SSH source IPs where practical.</li>
+        <li>Verify the target shared-folder path and ACLs before granting access.</li>
+        <li>Test session stability and reconnection over a longer period.</li>
+        <li>Store encrypted off-server backups and rehearse a restore.</li>
+        <li>Use a separately designed HTTPS reverse-proxy deployment if direct browser access is required.</li>
+      </ul></div>
+    </div>
+    <div class="callout warning">The portal was not configured for direct public HTTP/HTTPS access in the documented deployment. Do not expose TCP 8080, 8933, 4822 or 5432 directly to the internet as a shortcut.</div>
+  </section>
+
+  <section class="section">
+    <h2>Outcome</h2>
+    <p>The deployment achieved its core objective: a browser-accessible XFCE desktop on the DigitalOcean Ubuntu droplet, reached through an SSH local tunnel. The runbook records Guacamole and guacd 1.5.5 running, PostgreSQL healthy, the web portal bound to host loopback, and a successful desktop connection after troubleshooting.</p>
+    <p>The work also produced a repeatable operational record covering host preparation, desktop session configuration, Docker networking, XRDP binding, firewall rules, database initialization, validation, troubleshooting, backup and rollback. Remaining security and resilience tasks are clearly identified rather than presented as completed.</p>
+  </section>
+
+  <section class="section">
+    <h2>Skills demonstrated</h2>
+    <div class="chips">
+      <span class="chip">Ubuntu Server Administration</span><span class="chip">Linux User & Session Management</span><span class="chip">Apache Guacamole</span><span class="chip">XRDP / XFCE</span><span class="chip">Docker Compose</span><span class="chip">PostgreSQL</span><span class="chip">Linux Firewall (UFW)</span><span class="chip">SSH Tunnelling</span><span class="chip">Service Troubleshooting</span><span class="chip">Backup & Rollback Planning</span>
+    </div>
+  </section>
+
+  <div class="links"><a href="../projects.html">← Back to all projects</a><a href="../blog/index.html">Explore technical blog →</a></div>
+</main>
+<footer class="footer"><div class="wrap">© 2026 Ambrose Onsare · Infrastructure, cloud and systems engineering</div></footer>
+</body>
+</html>
