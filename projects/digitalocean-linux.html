@@ -4,301 +4,286 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="DigitalOcean Linux infrastructure project by Ambrose Onsare. Ubuntu, Docker, PostgreSQL, Apache Guacamole and Prometheus monitoring.">
-<title>DigitalOcean Linux Infrastructure | Ambrose Onsare</title>
+<meta name="description" content="A practical walkthrough of deploying Ubuntu Linux infrastructure on DigitalOcean using Docker, Apache Guacamole, PostgreSQL, Prometheus and Grafana.">
+<title>Building Linux Cloud Infrastructure on DigitalOcean | Ambrose Onsare</title>
 
 <style>
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+* { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-  --bg: #080d18;
-  --panel: #111a2b;
-  --text: #edf2fa;
-  --muted: #9aa9bd;
-  --accent: #55b8ff;
-  --border: #26344a;
+  --bg:#080d18;
+  --panel:#111a2b;
+  --text:#edf2fa;
+  --muted:#9aa9bd;
+  --accent:#55b8ff;
+  --border:#26344a;
 }
 
-html { scroll-behavior: smooth; }
+html { scroll-behavior:smooth; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: Arial, sans-serif;
-  line-height: 1.8;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  line-height:1.8;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
+a { color:inherit; text-decoration:none; }
 
 .container {
-  width: min(1050px, 90%);
-  margin: auto;
+  width:min(1050px,90%);
+  margin:auto;
 }
 
 header {
-  background: rgba(8,13,24,.97);
-  border-bottom: 1px solid var(--border);
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  background:rgba(8,13,24,.97);
+  border-bottom:1px solid var(--border);
+  position:sticky;
+  top:0;
+  z-index:10;
 }
 
 nav {
-  min-height: 75px;
-  display: flex;
-  justify-content: space-betIen;
-  align-items: center;
-  gap: 20px;
+  min-height:75px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:20px;
 }
 
-.logo {
-  font-size: 21px;
-  font-Iight: bold;
-}
-
-.logo span { color: var(--accent); }
+.logo { font-size:21px; font-weight:bold; }
+.logo span { color:var(--accent); }
 
 .nav-links {
-  display: flex;
-  gap: 22px;
-  list-style: none;
+  display:flex;
+  gap:22px;
+  list-style:none;
 }
 
-.nav-links a { color: var(--muted); }
-.nav-links a:hover { color: var(--accent); }
+.nav-links a { color:var(--muted); }
+.nav-links a:hover { color:var(--accent); }
 
-.hero {
-  padding: 80px 0 55px;
-}
+.hero { padding:75px 0 45px; }
 
-.eyebrow {
-  color: var(--accent);
-  font-size: 12px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
+.category {
+  color:var(--accent);
+  text-transform:uppercase;
+  letter-spacing:2px;
+  font-size:12px;
 }
 
 h1 {
-  font-size: clamp(35px, 6vw, 54px);
-  line-height: 1.2;
-  margin: 18px 0;
+  font-size:clamp(34px,6vw,53px);
+  line-height:1.2;
+  margin:18px 0;
 }
 
-.hero p {
-  max-width: 780px;
-  color: var(--muted);
-  font-size: 17px;
+.hero-description {
+  color:var(--muted);
+  font-size:18px;
+  max-width:800px;
+}
+
+.meta {
+  display:flex;
+  flex-wrap:wrap;
+  gap:18px;
+  margin-top:22px;
+  color:var(--muted);
+  font-size:13px;
 }
 
 .tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-  margin-top: 25px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:20px;
 }
 
 .tag {
-  background: #17263c;
-  color: #b7dfff;
-  padding: 6px 12px;
-  border-radius: 5px;
-  font-size: 12px;
-}
-
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 15px;
-  margin: 25px 0 55px;
-}
-
-.metric {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-}
-
-.metric strong {
-  display: block;
-  color: var(--accent);
-  font-size: 22px;
-}
-
-.metric span {
-  color: var(--muted);
-  font-size: 12px;
+  background:#17263c;
+  color:#b7dfff;
+  padding:5px 11px;
+  border-radius:5px;
+  font-size:12px;
 }
 
 .layout {
-  display: grid;
-  grid-template-columns: 230px 1fr;
-  gap: 40px;
-  align-items: start;
+  display:grid;
+  grid-template-columns:230px 1fr;
+  gap:40px;
+  align-items:start;
+  margin-top:30px;
 }
 
 .sidebar {
-  position: sticky;
-  top: 100px;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
+  position:sticky;
+  top:100px;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:20px;
 }
 
 .sidebar h3 {
-  font-size: 14px;
-  margin-bottom: 12px;
+  font-size:14px;
+  margin-bottom:12px;
 }
 
 .sidebar a {
-  display: block;
-  color: var(--muted);
-  font-size: 13px;
-  padding: 7px 0;
+  display:block;
+  color:var(--muted);
+  font-size:13px;
+  padding:7px 0;
 }
 
-.sidebar a:hover { color: var(--accent); }
+.sidebar a:hover { color:var(--accent); }
 
 article section {
-  margin-bottom: 55px;
-  scroll-margin-top: 100px;
+  margin-bottom:48px;
+  scroll-margin-top:100px;
 }
 
 h2 {
-  font-size: 26px;
-  margin-bottom: 15px;
+  font-size:27px;
+  margin-bottom:16px;
+  line-height:1.4;
 }
 
 h3 {
-  font-size: 18px;
-  margin: 25px 0 10px;
+  font-size:18px;
+  margin:25px 0 12px;
 }
 
-p {
-  color: var(--muted);
-  margin-bottom: 15px;
+p { color:var(--muted); margin-bottom:16px; }
+
+ul,ol {
+  padding-left:23px;
+  color:var(--muted);
+  margin:15px 0;
 }
 
-ul {
-  padding-left: 22px;
-  color: var(--muted);
-  margin: 12px 0;
-}
-
-li { margin-bottom: 8px; }
+li { margin-bottom:9px; }
 
 pre {
-  background: #050a12;
-  border: 1px solid var(--border);
-  padding: 20px;
-  border-radius: 8px;
-  overflow-x: auto;
-  margin: 15px 0;
+  background:#050a12;
+  border:1px solid var(--border);
+  padding:20px;
+  border-radius:8px;
+  overflow-x:auto;
+  margin:18px 0;
 }
 
 code {
-  color: #a8d9ff;
-  font-family: Consolas, monospace;
-  font-size: 13px;
+  color:#a8d9ff;
+  font-family:Consolas,monospace;
+  font-size:13px;
 }
 
-.inline-code {
-  background: #17263c;
-  color: #a8d9ff;
-  padding: 3px 6px;
-  border-radius: 4px;
+.inline {
+  background:#17263c;
+  padding:3px 6px;
+  border-radius:4px;
+  color:#a8d9ff;
 }
 
 .info {
-  background: var(--panel);
-  border-left: 3px solid var(--accent);
-  padding: 18px;
-  margin: 20px 0;
-  border-radius: 5px;
+  background:var(--panel);
+  border-left:3px solid var(--accent);
+  border-radius:5px;
+  padding:18px;
+  margin:22px 0;
 }
 
-.info p { margin: 0; }
+.info p { margin:0; }
 
-.architecture {
-  background: #050a12;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 25px;
-  margin: 20px 0;
-  text-align: center;
+.diagram {
+  background:#050a12;
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:25px;
+  margin:25px 0;
+  overflow-x:auto;
 }
 
-.arch-node {
-  display: block;
-  background: var(--panel);
-  border: 1px solid var(--accent);
-  border-radius: 7px;
-  padding: 13px;
-  margin: 10px auto;
-  max-width: 370px;
-  color: var(--text);
+.diagram svg {
+  width:100%;
+  height:auto;
+  display:block;
+  min-width:300px;
 }
 
-.arch-arrow {
-  color: var(--accent);
-  font-size: 20px;
+.diagram-caption {
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  margin-top:15px;
+}
+
+.image-placeholder {
+  border:1px dashed #526783;
+  background:#0c1524;
+  border-radius:10px;
+  min-height:155px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:22px;
+  text-align:center;
+  margin:22px 0;
+}
+
+.image-placeholder strong {
+  color:var(--accent);
+  margin-bottom:8px;
+}
+
+.image-placeholder p {
+  font-size:12px;
+  margin:0;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 20px 0;
-  font-size: 13px;
+  width:100%;
+  border-collapse:collapse;
+  margin:20px 0;
+  font-size:13px;
 }
 
-th, td {
-  padding: 12px;
-  border: 1px solid var(--border);
-  text-align: left;
+th,td {
+  border:1px solid var(--border);
+  padding:12px;
+  text-align:left;
 }
 
-th {
-  background: var(--panel);
-  color: var(--accent);
-}
-
-td { color: var(--muted); }
+th { background:var(--panel); color:var(--accent); }
+td { color:var(--muted); }
 
 .cta {
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 25px;
-  border-radius: 10px;
-  margin: 35px 0;
+  background:var(--panel);
+  border:1px solid var(--border);
+  padding:27px;
+  border-radius:10px;
+  margin:40px 0;
 }
 
-.cta a {
-  color: var(--accent);
-  font-Iight: bold;
-}
+.cta a { color:var(--accent); font-weight:bold; }
 
 footer {
-  border-top: 1px solid var(--border);
-  padding: 30px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 13px;
-  margin-top: 50px;
+  border-top:1px solid var(--border);
+  padding:30px;
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:50px;
 }
 
-@media(max-width: 750px) {
-  .layout { grid-template-columns: 1fr; }
-  .sidebar { position: static; }
-  nav { flex-direction: column; padding: 15px 0; }
-  .nav-links { flex-wrap: wrap; justify-content: center; }
+@media(max-width:750px) {
+  .layout { grid-template-columns:1fr; }
+  .sidebar { position:static; }
+  nav { flex-direction:column; padding:15px 0; }
+  .nav-links { flex-wrap:wrap; justify-content:center; }
 }
 </style>
 </head>
@@ -308,10 +293,11 @@ footer {
 <header>
 <nav class="container">
   <a href="../index.html" class="logo">AMBROSE<span>.</span></a>
+
   <ul class="nav-links">
     <li><a href="../index.html">Home</a></li>
     <li><a href="../projects.html">Projects</a></li>
-    <li><a href="../blog/index.html">Blog</a></li>
+    <li><a href="index.html">Blog</a></li>
     <li><a href="../about.html">About</a></li>
     <li><a href="../contact.html">Contact</a></li>
   </ul>
@@ -321,604 +307,653 @@ footer {
 <main class="container">
 
 <section class="hero">
-  <div class="eyebrow">Cloud Infrastructure / Linux / DevOps</div>
+  <div class="category">Linux / Cloud Infrastructure / DevOps</div>
 
-  <h1>DigitalOcean Linux Infrastructure Lab</h1>
+  <h1>Building Linux Cloud Infrastructure on DigitalOcean</h1>
 
-  <p>
-    Provisioning and administering Linux cloud infrastructure on
-    DigitalOcean, deploying containerized applications, configuring
-    remote access, managing PostgreSQL databases and implementing
-    infrastructure monitoring.
+  <p class="hero-description">
+    A practical engineering walkthrough covering Ubuntu server
+    administration, Docker containerization, Apache Guacamole,
+    PostgreSQL database connectivity and infrastructure monitoring
+    using Prometheus and Grafana.
   </p>
 
+  <div class="meta">
+    <span>By Ambrose Onsare</span>
+    <span>Technical walkthrough</span>
+    <span>Ubuntu 24.04 LTS</span>
+  </div>
+
   <div class="tags">
-    <span class="tag">Ubuntu 24.04 LTS</span>
+    <span class="tag">DigitalOcean</span>
+    <span class="tag">Ubuntu</span>
     <span class="tag">Docker</span>
     <span class="tag">PostgreSQL</span>
-    <span class="tag">Apache Guacamole</span>
+    <span class="tag">Guacamole</span>
     <span class="tag">Prometheus</span>
     <span class="tag">Grafana</span>
-    <span class="tag">SSH</span>
   </div>
 </section>
-
-<div class="metrics">
-  <div class="metric">
-    <strong>Ubuntu 24.04</strong>
-    <span>Operating system</span>
-  </div>
-  <div class="metric">
-    <strong>2 GB</strong>
-    <span>Droplet memory</span>
-  </div>
-  <div class="metric">
-    <strong>48 GB</strong>
-    <span>Approximate filesystem capacity</span>
-  </div>
-  <div class="metric">
-    <strong>29.1.3</strong>
-    <span>Docker version</span>
-  </div>
-</div>
 
 <div class="layout">
 
 <aside class="sidebar">
-  <h3>Project contents</h3>
-  <a href="#overview">01. Overview</a>
-  <a href="#architecture">02. Architecture</a>
-  <a href="#linux">03. Linux Administration</a>
-  <a href="#ssh">04. SSH & Access</a>
-  <a href="#docker">05. Docker Deployment</a>
-  <a href="#guacamole">06. Guacamole & XRDP</a>
-  <a href="#database">07. PostgreSQL</a>
-  <a href="#monitoring">08. Monitoring</a>
-  <a href="#troubleshooting">09. Troubleshooting</a>
-  <a href="#learnings">10. Lessons Learned</a>
+  <h3>Article contents</h3>
+  <a href="#introduction">01. Introduction</a>
+  <a href="#environment">02. Environment</a>
+  <a href="#architecture">03. Architecture</a>
+  <a href="#linux">04. Linux Administration</a>
+  <a href="#ssh">05. SSH Configuration</a>
+  <a href="#docker">06. Docker</a>
+  <a href="#guacamole">07. Guacamole</a>
+  <a href="#postgresql">08. PostgreSQL</a>
+  <a href="#monitoring">09. Monitoring</a>
+  <a href="#troubleshooting">10. Troubleshooting</a>
+  <a href="#conclusion">11. Conclusion</a>
 </aside>
 
 <article>
 
-<section id="overview">
-<h2>01. Project Overview</h2>
+<section id="introduction">
+<h2>01. Introduction</h2>
 
 <p>
-The objective was to build and administer a Linux-based cloud
-environment on DigitalOcean while gaining practical experience
-with Linux server administration, database connectivity,
-container orchestration, remote desktop access and monitoring.
+Cloud infrastructure is more than provisioning a virtual machine.
+A production-oriented Linux environment requires system administration,
+secure remote access, application deployment, database connectivity
+and continuous monitoring.
 </p>
 
 <p>
-The environment used an Ubuntu 24.04.5 LTS droplet with
-approximately 2 GB of RAM and a 48 GB filesystem.
+In this project, I worked with DigitalOcean to deploy and administer
+an Ubuntu-based environment. The work involved managing Linux
+services, troubleshooting SSH authentication, deploying Docker
+containers and configuring monitoring components.
 </p>
-
-<h3>Project objectives</h3>
-
-<ul>
-<li>Provision and administer a Linux cloud server.</li>
-<li>Configure secure SSH access and troubleshoot authentication.</li>
-<li>Deploy containerized services using Docker Compose.</li>
-<li>Implement browser-based remote access using Apache Guacamole.</li>
-<li>Work with PostgreSQL databases and authentication.</li>
-<li>Configure infrastructure monitoring using Prometheus and Grafana.</li>
-<li>Investigate connectivity and service configuration issues.</li>
-</ul>
-</section>
-
-<section id="architecture">
-<h2>02. Infrastructure Architecture</h2>
 
 <p>
-The environment combined Linux server administration, Docker-based
-application deployment, database services and monitoring.
-The following illustrates the logical components I worked with.
+The environment also provided an opportunity to work with
+Apache Guacamole for browser-based remote access and PostgreSQL
+for application and database connectivity.
 </p>
-
-<div class="architecture">
-  <div class="arch-node">
-    <strong>DigitalOcean Cloud</strong><br>
-    <small>Ubuntu 24.04.5 LTS Droplet</small>
-  </div>
-
-  <div class="arch-arrow">↓</div>
-
-  <div class="arch-node">
-    <strong>Linux Administration</strong><br>
-    <small>SSH · System Services · Networking</small>
-  </div>
-
-  <div class="arch-arrow">↓</div>
-
-  <div class="arch-node">
-    <strong>Docker Infrastructure</strong><br>
-    <small>Docker Engine · Docker Compose</small>
-  </div>
-
-  <div class="arch-arrow">↓</div>
-
-  <div class="arch-node">
-    <strong>Apache Guacamole</strong><br>
-    <small>Guacamole · Guacd · PostgreSQL Container</small>
-  </div>
-
-  <div class="arch-arrow">↓</div>
-
-  <div class="arch-node">
-    <strong>Remote Desktop Access</strong><br>
-    <small>XRDP · Linux Remote Sessions</small>
-  </div>
-
-  <div class="arch-arrow">↓</div>
-
-  <div class="arch-node">
-    <strong>Monitoring Stack</strong><br>
-    <small>Prometheus · Node Exporter · Grafana</small>
-  </div>
-</div>
 
 <div class="info">
 <p>
-<strong>Database distinction:</strong> I also worked with a separate
-DigitalOcean managed PostgreSQL database. It should not be confused
-with the PostgreSQL container deployed for Guacamole.
+<strong>Project scope:</strong> This article documents the practical
+environment and configurations we worked on. It distinguishes
+the deployed components from configuration exercises and
+troubleshooting investigations.
 </p>
 </div>
 </section>
 
-<section id="linux">
-<h2>03. Linux Server Administration</h2>
+<section id="environment">
+<h2>02. Infrastructure Environment</h2>
 
 <p>
-The cloud environment ran Ubuntu Server 24.04.5 LTS.
-I used the Linux command line for system administration,
-package management, service troubleshooting and infrastructure
-configuration.
+The primary cloud server ran Ubuntu Server 24.04.5 LTS.
+The following are the environment specifications recorded
+during our work.
 </p>
 
-<h3>System information</h3>
+<table>
+<tr><th>Component</th><th>Specification</th></tr>
+<tr><td>Cloud provider</td><td>DigitalOcean</td></tr>
+<tr><td>Operating system</td><td>Ubuntu 24.04.5 LTS</td></tr>
+<tr><td>Memory</td><td>Approximately 2 GB</td></tr>
+<tr><td>Filesystem capacity</td><td>Approximately 48 GB</td></tr>
+<tr><td>Docker Engine</td><td>29.1.3</td></tr>
+<tr><td>Docker Compose</td><td>2.40.3</td></tr>
+<tr><td>Application runtime</td><td>Docker containers</td></tr>
+</table>
 
-<pre><code># Check operating system
+<h3>Initial system inspection</h3>
+
+<p>
+After provisioning a Linux server, I used standard Linux
+utilities to understand its operating system, memory,
+storage and resource utilization.
+</p>
+
+<pre><code># Identify operating system
 cat /etc/os-release
 
-# Check kernel
+# Check kernel version
 uname -r
 
-# Check memory
+# Check memory utilization
 free -h
 
-# Check filesystem usage
+# Inspect filesystem capacity
 df -h
 
-# Check disk information
+# List storage devices
 lsblk
 
-# Check running processes
+# Monitor running processes
 top</code></pre>
 
-<h3>Package management</h3>
+<div class="image-placeholder">
+<strong>Screenshot 1 — Ubuntu server environment</strong>
+<p>Add your actual terminal screenshot showing lsb_release -a, free -h and df -h.</p>
+<p>Suggested file: assets/images/digitalocean-ubuntu.png</p>
+</div>
+</section>
 
-<pre><code># Update package repositories
+<section id="architecture">
+<h2>03. Infrastructure Architecture</h2>
+
+<p>
+The environment consisted of several interconnected
+infrastructure components. The diagram below illustrates
+their logical relationships.
+</p>
+
+<div class="diagram">
+<svg viewBox="0 0 700 570" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto">
+      <path d="M0 0 L6 3 L0 6" fill="#55b8ff"/>
+    </marker>
+  </defs>
+
+  <rect x="180" y="15" width="340" height="65" rx="10" fill="#17263c" stroke="#55b8ff"/>
+  <text x="350" y="43" fill="#edf2fa" font-size="17" text-anchor="middle">DigitalOcean Cloud</text>
+  <text x="350" y="63" fill="#9aa9bd" font-size="12" text-anchor="middle">Ubuntu 24.04.5 LTS Droplet</text>
+
+  <path d="M350 80 V112" stroke="#55b8ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="180" y="120" width="340" height="60" rx="9" fill="#111a2b" stroke="#526783"/>
+  <text x="350" y="145" fill="#edf2fa" font-size="15" text-anchor="middle">Linux Administration</text>
+  <text x="350" y="164" fill="#9aa9bd" font-size="12" text-anchor="middle">SSH · Systemd · Networking</text>
+
+  <path d="M350 180 V210" stroke="#55b8ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="180" y="218" width="340" height="60" rx="9" fill="#111a2b" stroke="#526783"/>
+  <text x="350" y="243" fill="#edf2fa" font-size="15" text-anchor="middle">Docker Infrastructure</text>
+  <text x="350" y="262" fill="#9aa9bd" font-size="12" text-anchor="middle">Docker Engine · Compose</text>
+
+  <path d="M350 278 V307" stroke="#55b8ff" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="35" y="315" width="190" height="78" rx="9" fill="#111a2b" stroke="#55b8ff"/>
+  <text x="130" y="343" fill="#edf2fa" font-size="14" text-anchor="middle">Guacamole</text>
+  <text x="130" y="364" fill="#9aa9bd" font-size="11" text-anchor="middle">Web application</text>
+  <text x="130" y="380" fill="#9aa9bd" font-size="11" text-anchor="middle">Guacd proxy</text>
+
+  <rect x="255" y="315" width="190" height="78" rx="9" fill="#111a2b" stroke="#55b8ff"/>
+  <text x="350" y="343" fill="#edf2fa" font-size="14" text-anchor="middle">PostgreSQL</text>
+  <text x="350" y="364" fill="#9aa9bd" font-size="11" text-anchor="middle">Guacamole database</text>
+  <text x="350" y="380" fill="#9aa9bd" font-size="11" text-anchor="middle">Separate DB client work</text>
+
+  <rect x="475" y="315" width="190" height="78" rx="9" fill="#111a2b" stroke="#55b8ff"/>
+  <text x="570" y="343" fill="#edf2fa" font-size="14" text-anchor="middle">XRDP</text>
+  <text x="570" y="364" fill="#9aa9bd" font-size="11" text-anchor="middle">Remote desktop</text>
+  <text x="570" y="380" fill="#9aa9bd" font-size="11" text-anchor="middle">Linux sessions</text>
+
+  <path d="M130 393 V430 H350 V448" fill="none" stroke="#55b8ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M350 393 V448" stroke="#55b8ff" stroke-width="2" marker-end="url(#arrow)"/>
+  <path d="M570 393 V430 H350" fill="none" stroke="#55b8ff" stroke-width="2"/>
+
+  <rect x="180" y="455" width="340" height="80" rx="9" fill="#17263c" stroke="#55b8ff"/>
+  <text x="350" y="482" fill="#edf2fa" font-size="15" text-anchor="middle">Monitoring Infrastructure</text>
+  <text x="350" y="503" fill="#9aa9bd" font-size="12" text-anchor="middle">Prometheus · Node Exporter</text>
+  <text x="350" y="520" fill="#9aa9bd" font-size="12" text-anchor="middle">Grafana · PostgreSQL metrics</text>
+</svg>
+
+<p class="diagram-caption">
+Logical representation of the technologies explored in this project,
+not a verified live topology.
+</p>
+</div>
+
+</section>
+
+<section id="linux">
+<h2>04. Linux Server Administration</h2>
+
+<p>
+Linux command-line administration formed the foundation
+of the project. I used Ubuntu package management, system
+utilities and service-management commands to administer
+the environment.
+</p>
+
+<h3>Updating the operating system</h3>
+
+<pre><code># Refresh package repositories
 sudo apt update
 
 # Upgrade installed packages
 sudo apt upgrade -y
 
-# Install common administration tools
+# Install common utilities
 sudo apt install curl wget vim \
-  net-tools unzip htop -y</code></pre>
+  unzip htop net-tools -y</code></pre>
+
+<h3>Managing Linux services</h3>
+
+<pre><code># View service status
+sudo systemctl status ssh
+
+# Restart a service
+sudo systemctl restart ssh
+
+# Enable a service at boot
+sudo systemctl enable ssh
+
+# Inspect service logs
+sudo journalctl -u ssh</code></pre>
 
 <p>
-These commands formed part of the Linux administration
-and troubleshooting workflow.
+Understanding systemd, service states and journal logs
+is particularly important when troubleshooting Linux
+applications and infrastructure services.
 </p>
 </section>
 
 <section id="ssh">
-<h2>04. SSH & Remote Access</h2>
+<h2>05. SSH Configuration and Authentication</h2>
 
 <p>
-SSH was used to administer the Ubuntu server remotely.
-I also investigated public-key authentication problems
-when connecting to the cloud environment.
+SSH was the primary method for administering the cloud server.
+During the work, we encountered public-key authentication
+failures when attempting to establish a connection.
 </p>
 
-<h3>SSH connectivity checks</h3>
+<pre><code>Permission denied (publickey)</code></pre>
 
-<pre><code># Check SSH service
+<h3>Investigating SSH</h3>
+
+<pre><code># Inspect SSH service
 sudo systemctl status ssh
 
 # Check listening ports
 sudo ss -tulpn
 
-# Review SSH service logs
-sudo journalctl -u ssh
+# Validate SSH server configuration
+sudo sshd -t
 
-# Check SSH configuration
-sudo sshd -t</code></pre>
+# Inspect authentication logs
+sudo journalctl -u ssh</code></pre>
 
-<h3>Public-key authentication</h3>
+<h3>SSH key management</h3>
 
-<p>
-I encountered the error:
-</p>
+<pre><code># Generate an ED25519 key pair
+ssh-keygen -t ed25519 -C "portfolio-server"
 
-<pre><code>Permission denied (publickey)</code></pre>
+# Inspect the SSH directory
+ls -la ~/.ssh
 
-<p>
-Troubleshooting involved reviewing SSH keys, client configuration,
-the authorized_keys file and Linux file permissions.
-</p>
-
-<pre><code># Check SSH directory permissions
-ls -ld ~/.ssh
-
-# Check authorized keys permissions
-ls -l ~/.ssh/authorized_keys
-
-# Set recommended permissions
+# Set directory permissions
 chmod 700 ~/.ssh
+
+# Set authorized keys permissions
 chmod 600 ~/.ssh/authorized_keys</code></pre>
 
 <div class="info">
 <p>
-Private SSH keys must never be uploaded to a public repository.
-Only sanitized configuration examples should be included in
-public documentation.
+SSH private keys must never be shared or uploaded to GitHub.
+Use sanitized examples and keep authentication secrets outside
+the public portfolio.
 </p>
 </div>
 </section>
 
 <section id="docker">
-<h2>05. Docker & Container Infrastructure</h2>
+<h2>06. Docker and Containerization</h2>
 
 <p>
-Docker was used to deploy and manage containerized services.
-I installed Docker Engine and Docker Compose and used
-Compose to define a multi-container Guacamole environment.
+We used Docker to deploy multiple services in an isolated,
+containerized environment. Docker Compose provided a way
+to define and manage the related services.
 </p>
 
-<h3>Environment versions</h3>
+<h3>Verifying the Docker environment</h3>
 
-<table>
-<tr>
-<th>Component</th>
-<th>Version</th>
-</tr>
-<tr>
-<td>Docker Engine</td>
-<td>29.1.3</td>
-</tr>
-<tr>
-<td>Docker Compose</td>
-<td>2.40.3</td>
-</tr>
-<tr>
-<td>PostgreSQL image</td>
-<td>16-alpine</td>
-</tr>
-<tr>
-<td>Guacamole image</td>
-<td>1.5.5</td>
-</tr>
-</table>
-
-<h3>Container administration</h3>
-
-<pre><code># Check Docker version
+<pre><code># Docker version
 docker --version
 
-# Check Compose version
+# Compose version
 docker compose version
 
-# List running containers
+# Running containers
 docker ps
 
-# List all containers
-docker ps -a
+# Container resource usage
+docker stats
 
-# View container logs
-docker logs CONTAINER_NAME
+# Docker networks
+docker network ls</code></pre>
 
-# List Docker networks
-docker network ls
+<h3>Managing containerized services</h3>
 
-# Check Docker resource usage
-docker stats</code></pre>
-
-<p>
-Docker Compose provided a centralized way to manage
-the application services and their dependencies.
-</p>
-</section>
-
-<section id="guacamole">
-<h2>06. Apache Guacamole & XRDP</h2>
-
-<p>
-I deployed Apache Guacamole using Docker Compose to provide
-browser-based remote access to a Linux desktop environment.
-The deployment consisted of three containers.
-</p>
-
-<table>
-<tr>
-<th>Container</th>
-<th>Image</th>
-<th>Purpose</th>
-</tr>
-<tr>
-<td>guacamole</td>
-<td>guacamole/guacamole:1.5.5</td>
-<td>Ib application</td>
-</tr>
-<tr>
-<td>guacd</td>
-<td>guacamole/guacd:1.5.5</td>
-<td>Remote desktop proxy</td>
-</tr>
-<tr>
-<td>guac-postgres</td>
-<td>postgres:16-alpine</td>
-<td>Application database</td>
-</tr>
-</table>
-
-<h3>Container deployment</h3>
-
-<p>
-The Compose environment was maintained in:
-</p>
-
-<pre><code>/opt/guacamole/</code></pre>
-
-<p>
-The main services Ire configured to communicate through
-the Docker network. Guacamole used the PostgreSQL container
-for application data, while guacd handled remote desktop
-connections.
-</p>
-
-<h3>Service verification</h3>
-
-<pre><code># Navigate to deployment directory
+<pre><code># Navigate to application directory
 cd /opt/guacamole
 
-# Start the Compose stack
+# Start services
 docker compose up -d
 
-# Check containers
+# Inspect service status
 docker compose ps
 
-# Inspect application logs
-docker compose logs guacamole
-
-# Inspect database logs
-docker compose logs guac-postgres
+# View application logs
+docker compose logs
 
 # Restart services
 docker compose restart</code></pre>
 
+<div class="image-placeholder">
+<strong>Screenshot 2 — Docker containers</strong>
+<p>Add a screenshot of docker ps showing your Guacamole, Guacd and PostgreSQL containers.</p>
+<p>Suggested file: assets/images/digitalocean-docker.png</p>
+</div>
+
+</section>
+
+<section id="guacamole">
+<h2>07. Apache Guacamole Remote Access</h2>
+
+<p>
+One of the interesting components of this environment
+was Apache Guacamole. It provides clientless remote desktop
+access through a web browser.
+</p>
+
+<p>
+We deployed Guacamole using Docker Compose, with separate
+containers for the web application, connection proxy
+and PostgreSQL database.
+</p>
+
+<table>
+<tr><th>Container</th><th>Image</th><th>Function</th></tr>
+<tr><td>guacamole</td><td>guacamole/guacamole:1.5.5</td><td>Web interface</td></tr>
+<tr><td>guacd</td><td>guacamole/guacd:1.5.5</td><td>Connection proxy</td></tr>
+<tr><td>guac-postgres</td><td>postgres:16-alpine</td><td>Database</td></tr>
+</table>
+
+<h3>Deployment directory</h3>
+
+<pre><code>/opt/guacamole/</code></pre>
+
+<h3>Service verification</h3>
+
+<pre><code># Check Compose services
+docker compose ps
+
+# Check Guacamole logs
+docker compose logs guacamole
+
+# Check guacd logs
+docker compose logs guacd
+
+# Check database logs
+docker compose logs guac-postgres</code></pre>
+
+<div class="image-placeholder">
+<strong>Screenshot 3 — Apache Guacamole interface</strong>
+<p>Add your actual browser screenshot showing the Guacamole login or remote connection interface.</p>
+<p>Suggested file: assets/images/digitalocean-guacamole.png</p>
+</div>
+
 <h3>XRDP integration</h3>
 
 <p>
-I also worked with XRDP to provide Linux remote desktop
-sessions. The XRDP service was configured to use port 8933,
-with the service bound to localhost.
+We also configured an XRDP service for Linux remote desktop
+sessions. The service was configured to use port 8933 and
+bind to localhost.
 </p>
 
-<pre><code># Check XRDP service
+<pre><code># Check XRDP status
 sudo systemctl status xrdp
 
-# Inspect XRDP configuration
+# Inspect listening port
 sudo ss -tulpn | grep 8933
 
-# Inspect service logs
+# Review XRDP logs
 sudo journalctl -u xrdp</code></pre>
 
-<div class="info">
 <p>
-Guacamole and XRDP served different roles: Guacamole provided
-the browser-based access layer, while XRDP provided the
-Linux remote desktop protocol endpoint.
+The important architectural distinction is that XRDP provides
+the remote desktop endpoint, while Guacamole provides the
+browser-based access layer.
 </p>
-</div>
+
 </section>
 
-<section id="database">
-<h2>07. PostgreSQL Database Administration</h2>
+<section id="postgresql">
+<h2>08. PostgreSQL Database Connectivity</h2>
 
 <p>
-I worked with PostgreSQL in two contexts: a PostgreSQL container
-supporting Apache Guacamole and a separate DigitalOcean managed
-PostgreSQL database.
+PostgreSQL was involved in two different areas of the work.
+The first was the PostgreSQL container supporting Guacamole.
+The second was a separate DigitalOcean managed PostgreSQL
+database that we accessed from Ubuntu.
 </p>
 
-<h3>Managed PostgreSQL connectivity</h3>
+<h3>Installing the PostgreSQL client</h3>
 
-<p>
-The Ubuntu droplet was used as a client environment for connecting
-to the managed database.
-</p>
-
-<pre><code># Install PostgreSQL client
+<pre><code># Install PostgreSQL client tools
 sudo apt install postgresql-client -y
 
-# Connect to a database
+# Check client version
+psql --version</code></pre>
+
+<h3>Connecting to the managed database</h3>
+
+<pre><code># Example connection
 psql -h DATABASE_HOST \
   -U DATABASE_USER \
-  -d etimsdb -p 25060</code></pre>
+  -d etimsdb \
+  -p DATABASE_PORT</code></pre>
 
 <p>
-The connection parameters above are illustrative.
-Use the actual connection details supplied by the database
-provider when configuring your own environment.
+The database connection was also used to work with the
+etimsdb database.
 </p>
 
-<h3>Authentication troubleshooting</h3>
+<h3>Investigating authentication problems</h3>
 
 <p>
-I encountered a PostgreSQL authentication issue:
+During connectivity troubleshooting, we encountered:
 </p>
 
 <pre><code>fe_sendauth: no password supplied</code></pre>
 
 <p>
-I investigated password handling and the PostgreSQL
-password file, including the use of the <code class="inline-code">.pgpass</code>
-configuration.
+We investigated password handling and the PostgreSQL
+password file, including the .pgpass configuration.
 </p>
 
-<pre><code># Create PostgreSQL password file
+<pre><code># Create password file
 touch ~/.pgpass
 
-# Restrict access
+# Restrict file permissions
 chmod 600 ~/.pgpass
 
-# Edit the file
+# Edit configuration
 nano ~/.pgpass</code></pre>
 
 <p>
-The PostgreSQL password file uses this format:
+The password file follows this format:
 </p>
 
 <pre><code>hostname:port:database:username:password</code></pre>
 
+<div class="info">
 <p>
-The credentials and database connection information
-must remain private.
+A PostgreSQL password file must have appropriate permissions.
+Never place actual database credentials in public configuration
+files or Git repositories.
 </p>
+</div>
+
 </section>
 
 <section id="monitoring">
-<h2>08. Infrastructure Monitoring</h2>
+<h2>09. Prometheus and Grafana Monitoring</h2>
 
 <p>
-I worked on implementing a monitoring environment using
-Prometheus, Node Exporter and Grafana, with additional
-PostgreSQL metrics integration.
+Monitoring was another major part of the infrastructure work.
+We deployed Prometheus, worked with Node Exporter and configured
+monitoring targets, including PostgreSQL metrics.
 </p>
 
-<h3>Prometheus</h3>
+<div class="diagram">
+<svg viewBox="0 0 700 300" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <marker id="monitor-arrow" markerWidth="8" markerHeight="8" refX="5" refY="3" orient="auto">
+      <path d="M0 0 L6 3 L0 6" fill="#55b8ff"/>
+    </marker>
+  </defs>
 
-<p>
-Prometheus was configured to collect metrics from monitoring
-targets using scrape configurations.
-</p>
+  <rect x="20" y="75" width="190" height="130" rx="10" fill="#111a2b" stroke="#55b8ff"/>
+  <text x="115" y="108" fill="#edf2fa" text-anchor="middle" font-size="16">Linux Server</text>
+  <text x="115" y="135" fill="#9aa9bd" text-anchor="middle" font-size="12">Node Exporter</text>
+  <text x="115" y="155" fill="#9aa9bd" text-anchor="middle" font-size="12">System Metrics</text>
+  <text x="115" y="178" fill="#9aa9bd" text-anchor="middle" font-size="11">CPU · RAM · Disk</text>
 
-<h3>Node Exporter</h3>
+  <rect x="255" y="75" width="190" height="130" rx="10" fill="#17263c" stroke="#55b8ff"/>
+  <text x="350" y="115" fill="#edf2fa" text-anchor="middle" font-size="18">Prometheus</text>
+  <text x="350" y="142" fill="#9aa9bd" text-anchor="middle" font-size="12">Scrape Targets</text>
+  <text x="350" y="165" fill="#9aa9bd" text-anchor="middle" font-size="12">Time Series Data</text>
 
-<p>
-Node Exporter was used to expose Linux system metrics
-for Prometheus collection.
-</p>
+  <rect x="490" y="75" width="190" height="130" rx="10" fill="#111a2b" stroke="#55b8ff"/>
+  <text x="585" y="115" fill="#edf2fa" text-anchor="middle" font-size="18">Grafana</text>
+  <text x="585" y="142" fill="#9aa9bd" text-anchor="middle" font-size="12">Dashboards</text>
+  <text x="585" y="165" fill="#9aa9bd" text-anchor="middle" font-size="12">Visualization</text>
 
-<h3>PostgreSQL metrics</h3>
+  <path d="M210 140 H250" stroke="#55b8ff" stroke-width="2" marker-end="url(#monitor-arrow)"/>
+  <path d="M445 140 H485" stroke="#55b8ff" stroke-width="2" marker-end="url(#monitor-arrow)"/>
 
-<p>
-I also added a PostgreSQL metrics endpoint as a Prometheus
-scrape target, allowing database monitoring to be incorporated
-into the monitoring environment.
-</p>
+  <text x="350" y="245" fill="#9aa9bd" text-anchor="middle" font-size="12">PostgreSQL metrics were also configured as a monitoring target</text>
+</svg>
 
-<h3>Configuration validation</h3>
+<p class="diagram-caption">Logical Prometheus and Grafana monitoring architecture.</p>
+</div>
 
-<pre><code># Validate Prometheus configuration
+<h3>Prometheus configuration validation</h3>
+
+<pre><code># Validate configuration
 promtool check config /etc/prometheus/prometheus.yml
 
-# Check Prometheus service
+# Check Prometheus status
 sudo systemctl status prometheus
 
-# Check Node Exporter service
-sudo systemctl status prometheus-node-exporter
-
-# Inspect Prometheus logs
+# Inspect service logs
 sudo journalctl -u prometheus</code></pre>
 
-<div class="info">
 <p>
-I encountered and resolved YAML configuration issues during
-Prometheus setup. Configuration validation is important before
-restarting monitoring services.
+We encountered YAML parsing issues while configuring
+Prometheus scrape targets. The configuration was reviewed
+and corrected during troubleshooting.
 </p>
+
+<h3>Monitoring objectives</h3>
+
+<ul>
+<li>Collect Linux server resource metrics.</li>
+<li>Monitor CPU, memory and filesystem utilization.</li>
+<li>Configure Prometheus scrape targets.</li>
+<li>Integrate PostgreSQL metrics.</li>
+<li>Use Grafana to visualize collected monitoring data.</li>
+</ul>
+
+<div class="image-placeholder">
+<strong>Screenshot 4 — Grafana monitoring dashboard</strong>
+<p>Add an actual Grafana dashboard showing Linux system or database metrics.</p>
+<p>Suggested file: assets/images/digitalocean-grafana.png</p>
 </div>
+
 </section>
 
 <section id="troubleshooting">
-<h2>09. Troubleshooting & Technical Challenges</h2>
+<h2>10. Troubleshooting and Lessons Learned</h2>
 
-<h3>SSH authentication failures</h3>
 <p>
-Investigated public-key authentication failures, SSH key
-generation and client-side key configuration.
+Infrastructure deployments rarely proceed without challenges.
+The following are some of the issues we investigated during
+the project.
+</p>
+
+<h3>SSH authentication</h3>
+<p>
+We investigated public-key authentication failures,
+SSH key configuration and file permissions.
 </p>
 
 <h3>PostgreSQL authentication</h3>
 <p>
-Investigated missing password errors, PostgreSQL connection
-parameters and .pgpass configuration.
+We encountered missing password errors and investigated
+the .pgpass configuration and database connection parameters.
 </p>
 
-<h3>Docker deployment</h3>
+<h3>Prometheus configuration</h3>
 <p>
-Worked with container startup, Compose configuration,
-service connectivity and application logs.
+YAML parsing errors were investigated while configuring
+scrape jobs and monitoring targets.
 </p>
 
-<h3>Prometheus YAML errors</h3>
+<h3>Container administration</h3>
 <p>
-Investigated invalid YAML configuration and corrected
-scrape target configuration.
+Docker Compose, container status, logs and service connectivity
+were important parts of deployment troubleshooting.
 </p>
 
-<h3>Remote desktop connectivity</h3>
-<p>
-Worked with XRDP service status, port configuration
-and browser-based Guacamole access.
-</p>
-</section>
-
-<section id="learnings">
-<h2>10. Technical Skills & Lessons Learned</h2>
+<h3>Key technical lessons</h3>
 
 <ul>
-<li>Linux server provisioning and administration.</li>
-<li>SSH authentication and Linux permissions.</li>
-<li>Docker container lifecycle management.</li>
-<li>Docker Compose multi-container deployments.</li>
-<li>Apache Guacamole remote access architecture.</li>
-<li>PostgreSQL connectivity and authentication.</li>
-<li>Prometheus metrics collection and configuration.</li>
-<li>Linux service monitoring and troubleshooting.</li>
-<li>Infrastructure observability using Grafana.</li>
+<li>Validate configuration files before restarting services.</li>
+<li>Use service logs to identify the source of failures.</li>
+<li>Keep database credentials and SSH keys secure.</li>
+<li>Understand the relationship between containers and networks.</li>
+<li>Monitor resource utilization on small cloud droplets.</li>
+<li>Separate application databases from external managed databases.</li>
+<li>Document infrastructure changes and troubleshooting steps.</li>
 </ul>
 
-<div class="info">
-<p>
-This project demonstrates practical exposure to Linux cloud
-administration, containerized applications, database services
-and infrastructure monitoring.
-</p>
-</div>
 </section>
 
-<div class="cta">
-<h2>Explore related technical documentation</h2>
+<section id="conclusion">
+<h2>11. Conclusion</h2>
+
 <p>
-Read implementation guides, troubleshooting walkthroughs
-and lessons from this project.
+This project provided practical experience with administering
+Ubuntu cloud infrastructure and deploying services using Docker.
+It brought together Linux administration, remote access,
+database connectivity and monitoring into one technical
+learning environment.
 </p>
-<a href="../blog/digitalocean-linux.html">
-Read the DigitalOcean Linux technical blog →
+
+<p>
+The work also reinforced the importance of troubleshooting,
+service management, configuration validation and secure
+infrastructure administration.
+</p>
+
+<p>
+These are skills that are useful when managing cloud-hosted
+applications and modern IT infrastructure.
+</p>
+
+<div class="cta">
+<h3>Explore the full project case study</h3>
+<p>
+See the project overview, infrastructure architecture,
+technologies and implementation details.
+</p>
+<a href="../projects/digitalocean-linux.html">
+View DigitalOcean Linux Infrastructure Project →
 </a>
 <br><br>
-<a href="../projects.html">← Back to all projects</a>
+<a href="../projects.html">← Explore all projects</a>
 </div>
+
+</section>
 
 </article>
 </div>
+
 </main>
 
 <footer>
